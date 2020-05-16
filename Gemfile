@@ -23,7 +23,7 @@ gem "sprockets", ">= 3.0.0"
 gem "title"
 gem "tzinfo-data", platforms: [:mingw, :x64_mingw, :mswin, :jruby]
 gem "webpacker"
-gem 'react_on_rails', '11.2.2'
+gem 'react_on_rails', '11.3.0'
 
 group :development do
   gem "listen"

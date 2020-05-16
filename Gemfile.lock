@@ -215,7 +215,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    react_on_rails (11.2.2)
+    react_on_rails (11.3.0)
       addressable
       connection_pool
       execjs (~> 2.5)
@@ -349,7 +349,7 @@ DEPENDENCIES
   rack-mini-profiler
   rack-timeout
   rails (~> 6.0.0)
-  react_on_rails (= 11.2.2)
+  react_on_rails (= 11.3.0)
   recipient_interceptor
   rspec-rails (~> 3.6)
   sassc-rails
