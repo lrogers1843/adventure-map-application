@@ -38,6 +38,8 @@ app/views/hello_world/index.html.erb set prerender: true
 ### Models
 Adding User and Activity
 User has many Activities, tweaking model and activity schema, plus activity controller to assign last user for testing purpose 
+Used devise gempage for setup, added auth to User
+In activities controller, adding auth requirement and current user as new activity owner
 
 
 

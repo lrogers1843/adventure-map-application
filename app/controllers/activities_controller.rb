@@ -1,5 +1,6 @@
 class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   # GET /activities
   def index
@@ -21,7 +22,7 @@ class ActivitiesController < ApplicationController
 
   # POST /activities
   def create
-    @activity = User.last.activities.create(activity_params)
+    @activity = current_user.activities.create(activity_params)
 
     if @activity.save
       redirect_to @activity, notice: 'Activity was successfully created.'
