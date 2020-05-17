@@ -9,7 +9,7 @@ ruby "2.6.3"
 
 
 gem "autoprefixer-rails"
-
+gem "omniauth-strava"
 gem "bootsnap", require: false
 gem "honeybadger"
 gem "pg"
