@@ -66,3 +66,5 @@ gem 'delayed_job_active_record'
 gem 'inline_svg'
 gem 'rack-timeout', group: :production
 gem "foreman", "~> 0.87.1", :group => :development
+
+gem 'mini_racer', platforms: :ruby

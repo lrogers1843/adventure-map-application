@@ -11,7 +11,8 @@
     "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-on-rails": "11.3.0"
   },
   "version": "0.1.0",
   "devDependencies": {

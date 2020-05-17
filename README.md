@@ -1,4 +1,42 @@
 # Adventure map application
+# Devlopment Log
+### Rails App
+cloned remote
+suspenders .
+had to add pg confic to config/database.yml
+redid db:create and db:migrate
+### Node Setup
+node - https://gist.github.com/noygal/6b7b1796a92d70e24e35f94b53722219#installing-nodejs
+nvm - had to ref .bashrc from .profile to init
+yarn - https://medium.com/@harshityadav95/setting-up-nodejs-yarn-on-wsl-windows-subsystem-for-linux-e29d952ff6eb
+### Webpacker
+You will need to add Webpacker to your application. Run the following in your project directory:
+bundle exec rails webpacker:install
+bundle exec rails webpacker:install:react
+yarn add --dev webpack-dev-server
+### Foreman
+I have a preference for utilizing Docker to manage development dependencies, but, because React on Rails utilizes Foreman for so many of its instructions, I'm including it in this tutorial as many things will be MUCH easier to do if you have it installed.
+Run the following command in your project directory:
+bundle add foreman --group "development"
+use:  
+In order to run both parts of the webpack dev server, you will want to run the following commands in your project directory:
+foreman start -f Procfile.dev
+foreman start -f Procfile.dev-server
+### React-on-rails
+gem 'react_on_rails', '11.3.0'
+bundle
+git commit -am "Add React on Rails gem"
+rails generate react_on_rails:install
+bundle && yarn
+### Heroku 
+heroku create adventure-map-viewer
+heroku buildpacks:set heroku/ruby
+heroku buildpacks:add --index 1 heroku/nodejs
+### Hello World
+with foreman and pg running (w/o webpacker), http://localhost:3000/hello_world works
+app/views/hello_world/index.html.erb set prerender: true
+
+
 
 ## Getting Started
 
