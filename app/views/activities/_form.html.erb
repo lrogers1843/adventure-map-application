@@ -1,0 +1,25 @@
+
+<%= simple_form_for(@activity) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+
+  <div class="form-inputs">
+    <%= f.input :name %>
+    <%= f.input :description %>
+    <%= f.input :distance %>
+    <%= f.input :total_elevation_gain %>
+    <%= f.input :moving_time %>
+    <%= f.input :elapsed_time %>
+    <%= f.input :start_date %>
+    <%= f.input :start_lat %>
+    <%= f.input :start_lng %>
+    <%= f.input :end_lat %>
+    <%= f.input :end_lng %>
+    <%= f.input :workout_type %>
+    <%= f.input :polymap %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

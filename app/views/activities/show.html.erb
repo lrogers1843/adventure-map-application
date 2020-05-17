@@ -1,0 +1,69 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @activity.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @activity.description %>
+</p>
+
+<p>
+  <strong>Distance:</strong>
+  <%= @activity.distance %>
+</p>
+
+<p>
+  <strong>Total elevation gain:</strong>
+  <%= @activity.total_elevation_gain %>
+</p>
+
+<p>
+  <strong>Moving time:</strong>
+  <%= @activity.moving_time %>
+</p>
+
+<p>
+  <strong>Elapsed time:</strong>
+  <%= @activity.elapsed_time %>
+</p>
+
+<p>
+  <strong>Start date:</strong>
+  <%= @activity.start_date %>
+</p>
+
+<p>
+  <strong>Start lat:</strong>
+  <%= @activity.start_lat %>
+</p>
+
+<p>
+  <strong>Start lng:</strong>
+  <%= @activity.start_lng %>
+</p>
+
+<p>
+  <strong>End lat:</strong>
+  <%= @activity.end_lat %>
+</p>
+
+<p>
+  <strong>End lng:</strong>
+  <%= @activity.end_lng %>
+</p>
+
+<p>
+  <strong>Workout type:</strong>
+  <%= @activity.workout_type %>
+</p>
+
+<p>
+  <strong>Polymap:</strong>
+  <%= @activity.polymap %>
+</p>
+
+<%= link_to 'Edit', edit_activity_path(@activity) %> |
+<%= link_to 'Back', activities_path %>

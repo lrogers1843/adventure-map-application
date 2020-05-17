@@ -35,6 +35,9 @@ heroku buildpacks:add --index 1 heroku/nodejs
 ### Hello World
 with foreman and pg running (w/o webpacker), http://localhost:3000/hello_world works
 app/views/hello_world/index.html.erb set prerender: true
+### Models
+Adding User and Activity
+User has many Activities, tweaking model and activity schema, plus activity controller to assign last user for testing purpose 
 
 
 

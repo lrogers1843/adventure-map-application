@@ -10,10 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_16_014506) do
+ActiveRecord::Schema.define(version: 2020_05_17_151830) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.float "distance"
+    t.float "total_elevation_gain"
+    t.integer "moving_time"
+    t.integer "elapsed_time"
+    t.datetime "start_date"
+    t.float "start_lat"
+    t.float "start_lng"
+    t.float "end_lat"
+    t.float "end_lng"
+    t.integer "workout_type"
+    t.string "polymap"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_activities_on_user_id"
+  end
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -28,6 +48,12 @@ ActiveRecord::Schema.define(version: 2020_05_16_014506) do
     t.datetime "created_at", precision: 6
     t.datetime "updated_at", precision: 6
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end
