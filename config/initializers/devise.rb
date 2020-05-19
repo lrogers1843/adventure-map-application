@@ -259,7 +259,7 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  config.omniauth :strava, Rails.application.credentials.strava_client_id, Rails.application.credentials.strava_api_key, scope: 'activity:read_all', token_params: { parse: :json }
+  config.omniauth :strava, Rails.application.credentials.strava_client_id, Rails.application.credentials.strava_api_key, scope: 'read,activity:read', token_params: { parse: :json }
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

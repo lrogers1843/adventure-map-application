@@ -6,7 +6,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # You should also create an action method in this controller like this:
   def strava
-
+    @user = User.from_omniauth(request.env["omniauth.auth"])
   end
 
   # More info at:

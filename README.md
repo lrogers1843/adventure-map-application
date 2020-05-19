@@ -41,11 +41,13 @@ User has many Activities, tweaking model and activity schema, plus activity cont
 ### Devise and OmniAuth
 Used devise gempage for setup, added auth to User
 In activities controller, adding auth requirement and current user as new activity owner
-adding gem "omniauth-strava", skipper config/initializers/omniauth.rb and contents
+adding gem "omniauth-strava", skipped config/initializers/omniauth.rb and contents
 db add the columns "provider" (string) and "uid" (string) to your User model.
-config/initializers/devise.rb add config.omniauth :strava, 'APP_ID', 'APP_SECRET', token_params: { parse: :json }
-signin link generated but config.omniauth :strava, 'APP_ID', 'APP_SECRET', token_params: { parse: :json }, likely need to revisit the ENVs
-err: {"message":"Bad Request","errors":[{"resource":"Application","field":"client_id","code":"invalid"}]}
+config/initializers/devise.rb add config.omniauth
+added env vars to fix
+{"message":"Bad Request","errors":[{"resource":"Application","field":"client_id","code":"invalid"}]}
+tweaked scope to fix
+{"message":"Bad Request","errors":[{"resource":"Authorize","field":"scope","code":"invalid"}]}
 
 
 ## Getting Started
