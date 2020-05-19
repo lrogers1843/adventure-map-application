@@ -33,7 +33,7 @@ heroku create adventure-map-viewer
 heroku buildpacks:set heroku/ruby
 heroku buildpacks:add --index 1 heroku/nodejs
 ### Hello World
-with foreman and pg running (w/o webpacker), http://localhost:3000/hello_world works
+with foreman dev-server and pg running (w/o webpacker), http://localhost:3000/hello_world works
 app/views/hello_world/index.html.erb set prerender: true
 ### Models
 Adding User and Activity
@@ -41,7 +41,7 @@ User has many Activities, tweaking model and activity schema, plus activity cont
 ### Devise and OmniAuth
 Used devise gempage for setup, added auth to User
 In activities controller, adding auth requirement and current user as new activity owner
-adding gem "omniauth-strava", creating config/initializers/omniauth.rb and contents (using credentials instead of secrets)
+adding gem "omniauth-strava", skipper config/initializers/omniauth.rb and contents
 db add the columns "provider" (string) and "uid" (string) to your User model.
 config/initializers/devise.rb add config.omniauth :strava, 'APP_ID', 'APP_SECRET', token_params: { parse: :json }
 signin link generated but config.omniauth :strava, 'APP_ID', 'APP_SECRET', token_params: { parse: :json }, likely need to revisit the ENVs
