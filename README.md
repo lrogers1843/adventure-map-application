@@ -48,6 +48,15 @@ added env vars to fix
 {"message":"Bad Request","errors":[{"resource":"Application","field":"client_id","code":"invalid"}]}
 tweaked scope to fix
 {"message":"Bad Request","errors":[{"resource":"Authorize","field":"scope","code":"invalid"}]}
+had to set strava method in app/controllers/users/omniauth_callbacks_controller.rb
+and self.from_omniauth in app/models/user.rb
+Also removed :validatable from user model devise list, and now allows me so save user without email (Strava doesn't provide) 
+### Mapbox
+added mapbox_api_key to credentials
+put api call in app/controllers/hello_world_controller.rb, api in new folder app/services
+### Strava
+api in app/services
+need user token stuff, added that to user db table
 
 
 ## Getting Started

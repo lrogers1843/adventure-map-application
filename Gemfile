@@ -25,6 +25,7 @@ gem "tzinfo-data", platforms: [:mingw, :x64_mingw, :mswin, :jruby]
 gem "webpacker"
 gem 'react_on_rails', '11.3.0'
 gem 'devise'
+gem 'httparty'
 
 group :development do
   gem "listen"

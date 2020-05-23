@@ -1,0 +1,2 @@
+module Strava
+end
