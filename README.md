@@ -56,7 +56,12 @@ added mapbox_api_key to credentials
 put api call in app/controllers/hello_world_controller.rb, api in new folder app/services
 ### Strava
 api in app/services
-need user token stuff, added that to user db table
+need user token, expiration, etc, added that to user db table
+
+
+### To-do
+figure out why strava is pulling n-1 activities
+css framework
 
 
 ## Getting Started

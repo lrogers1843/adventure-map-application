@@ -1,5 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import mapboxgl from 'mapbox-gl';
+
+mapboxgl.accessToken = 'pk.eyJ1IjoibHJvZ2VyczE4NDMiLCJhIjoiY2thZ3Fnejk2MGI3dzJwbWo0eXE1dHF6MyJ9.oYfkk7ZeGShmfugXoZ6Wkg';
+
 
 export default class HelloWorld extends React.Component {
   static propTypes = {
@@ -17,12 +21,23 @@ export default class HelloWorld extends React.Component {
     this.state = { name: this.props.name };
   }
 
+  componentDidMount() {
+    console.log("mounted")
+    const map = new mapboxgl.Map({
+    container: this.mapContainer,
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-74.50, 40],
+    zoom: 9
+    });
+  }
+
   updateName = (name) => {
     this.setState({ name });
   };
 
   render() {
     return (
+      <>
       <div>
         <h3>
           Hello, {this.state.name}!
@@ -39,7 +54,10 @@ export default class HelloWorld extends React.Component {
             onChange={(e) => this.updateName(e.target.value)}
           />
         </form>
+        
       </div>
-    );
+      <div ref={el => this.mapContainer = el} className='mapContainer' />
+      </>
+    )
   }
 }

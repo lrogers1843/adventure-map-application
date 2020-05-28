@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_22_120835) do
+ActiveRecord::Schema.define(version: 2020_05_24_170404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2020_05_22_120835) do
     t.float "start_lng"
     t.float "end_lat"
     t.float "end_lng"
-    t.integer "workout_type"
+    t.string "workout_type"
     t.string "polymap"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
