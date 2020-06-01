@@ -57,6 +57,8 @@ put api call in app/controllers/hello_world_controller.rb, api in new folder app
 ### Strava
 api in app/services
 need user token, expiration, etc, added that to user db table
+### pairing 5/28
+copying all of app/javascript/packs/application.js to app/javascript/packs/hello-world-bundle.js
 
 
 ### To-do
