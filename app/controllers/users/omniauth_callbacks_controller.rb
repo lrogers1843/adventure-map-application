@@ -7,7 +7,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # You should also create an action method in this controller like this:
   def strava
     @user = User.from_omniauth(request.env["omniauth.auth"])
-binding.pry
     if @user.persisted?
       p "persisted"
       sign_in_and_redirect @user # event: :authentication (this for Warden callbacks) #this will throw if @user is not activated

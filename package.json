@@ -9,11 +9,13 @@
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "5.1.1",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "flatpickr": "^4.6.3",
     "mapbox-gl": "^1.10.1",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-flatpickr": "^3.10.1",
     "react-on-rails": "11.3.0"
   },
   "version": "0.1.0",

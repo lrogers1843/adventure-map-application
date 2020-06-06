@@ -23,5 +23,9 @@ cursor: pointer;
 padding: 10px 20px;
 border-radius: 3px;
 }
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
+}
 </style>
 <%= react_component("HelloWorld", props: @hello_world_props, prerender: false) %> 

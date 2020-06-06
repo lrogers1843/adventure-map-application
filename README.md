@@ -57,8 +57,17 @@ put api call in app/controllers/hello_world_controller.rb, api in new folder app
 ### Strava
 api in app/services
 need user token, expiration, etc, added that to user db table
-### pairing 5/28
-copying all of app/javascript/packs/application.js to app/javascript/packs/hello-world-bundle.js
+### MapboxGL
+yarn add mapbox
+to make mapbox work, had to do add environment.loaders.delete('nodeModules'); in config/webpack/environment.js
+then, manually import in app/javascript/bundles/HelloWorld/components/HelloWorld.jsx
+this is because mapbox doesn;t play nice with webpack. The alternative approach is to use a "shim", which is the same thing needed for jquery, and put the library call further up in the /packs
+### flatpickr
+yarn add lib, call in app/javascript/bundles/HelloWorld/components/HelloWorld.jsx, use there for UI
+monthly plugin seems broken, just going with range plugin instead
+also learned that inspect breaks some flatpickr features
+
+
 
 
 ### To-do
