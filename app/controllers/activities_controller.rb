@@ -4,7 +4,18 @@ class ActivitiesController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => [:filter]
 
   def filter
-    render json: Activity.first(2)
+
+    # get initial set by date
+    activities = Activity.where(start_date: params[:startdate]..params[:enddate])
+
+    # filer by type
+    if (params[:activity_type])
+      activities = activities.where(workout_type: params[:activity_type])
+    end
+    
+    # return to app
+    render json: activities
+    
   end
 
   # GET /activities

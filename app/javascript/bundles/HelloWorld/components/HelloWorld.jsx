@@ -37,17 +37,12 @@ export default class HelloWorld extends React.Component {
       enddate: new Date(activities[0].start_date),
       selected_activities: selected_activities, //array of all activity coordinates in individual arrays, for activity display
       zoom_coords: zooms, // array of all activity coordinates, for map zoom
+      activity_type: "Kayaking",
     };
   }
   
   filterWithRails() {
-    var startdate = this.state.startdate
-    var enddate = this.state.enddate
-    var data = { 
-      startdate: startdate,
-      enddate: enddate 
-    };
-      
+    var data = (({ startdate, enddate, activity_type }) => ({ startdate, enddate, activity_type }))(this.state);
     fetch("/activities/filter", {
       method: 'POST',
       headers:  {
@@ -77,7 +72,6 @@ export default class HelloWorld extends React.Component {
       };
     };
     this.setState({zoom_coords: zooms, selected_activities: selected_activities});
-    console.log(this.state.selected_activities)
   }
   newMap(){ 
   return (
@@ -208,6 +202,9 @@ export default class HelloWorld extends React.Component {
                 this.updateMap()
               }}
             />
+            <h3>Activity</h3>
+            <select>{[]}</select>
+
           </form>
         </div>
 
