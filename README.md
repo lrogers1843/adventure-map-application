@@ -66,6 +66,14 @@ this is because mapbox doesn;t play nice with webpack. The alternative approach 
 yarn add lib, call in app/javascript/bundles/HelloWorld/components/HelloWorld.jsx, use there for UI
 monthly plugin seems broken, just going with range plugin instead
 also learned that inspect breaks some flatpickr features
+skipped range plugin due to small buggyness on display, went with two inputs
+### filtering and updating 
+achieved, just a small snag until saved map on state to provide reference for update functions
+### rails call for filter
+new call from component using JS fetch()
+new route @ activities/filter
+new controller method activities#filter to handle params and return JSON
+
 
 
 

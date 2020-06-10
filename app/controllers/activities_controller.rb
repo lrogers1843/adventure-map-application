@@ -1,6 +1,11 @@
 class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!
+  skip_before_action :verify_authenticity_token, :only => [:filter]
+
+  def filter
+    render json: Activity.first(2)
+  end
 
   # GET /activities
   def index

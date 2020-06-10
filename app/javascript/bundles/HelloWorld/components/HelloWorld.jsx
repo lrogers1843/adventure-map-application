@@ -40,6 +40,27 @@ export default class HelloWorld extends React.Component {
     };
   }
   
+  filterWithRails() {
+    var startdate = this.state.startdate
+    var enddate = this.state.enddate
+    var data = { 
+      startdate: startdate,
+      enddate: enddate 
+    };
+      
+    fetch("/activities/filter", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => console.log(result))
+  };
+
+  //updates state: zoom_coords and selected_activities
   activityFilterAndParseForMap() {
     var count = this.props.activities.length;
     var activities = this.props.activities;
@@ -47,9 +68,6 @@ export default class HelloWorld extends React.Component {
     var selected_activities = [];
     var startdate = this.state.startdate
     var enddate = this.state.enddate
-    console.log(activities[0])
-    console.log(startdate)
-    console.log(activities[0].start_date >= startdate)
     for (var i = 0; i < count-1; i++) {
       var activity_date = new Date(activities[i].start_date)
       if (activity_date >= startdate && activity_date <= enddate) {
@@ -58,80 +76,79 @@ export default class HelloWorld extends React.Component {
         selected_activities.push(activity_coordinates); //appends for display
       };
     };
-    console.log(zooms)
     this.setState({zoom_coords: zooms, selected_activities: selected_activities});
-    console.log(this.state.zoom_coords)
+    console.log(this.state.selected_activities)
   }
-   newMap(){ 
-    return (
-      new mapboxgl.Map({
-        container: this.mapContainer,
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-74.50, 40],
-        zoom: 9
-      })
-      )
-    }
-    
-    zoomIn(map) {
-      var coordinates = this.state.zoom_coords;
-      var bounds = coordinates.reduce(function(bounds, coord) {
-        return bounds.extend(coord);
-      }, 
-      new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-      map.fitBounds(bounds, {
-      padding: 20
-      });
-    }
+  newMap(){ 
+  return (
+    new mapboxgl.Map({
+      container: this.mapContainer,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-80.5, 35],
+      zoom: 9
+    })
+    )
+  }
+  
+  zoomIn(map) {
+    var coordinates = this.state.zoom_coords;
+    var bounds = coordinates.reduce(function(bounds, coord) {
+      return bounds.extend(coord);
+    }, 
+    new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    map.fitBounds(bounds, {
+    padding: 50
+    });
+  }
 
-    addDataSource(map, data) {
-      map.addSource('test', {
-        'type': 'geojson',
-        'data': {
-          'type': 'Feature',
-          'properties': {},
-          'geometry': {
-            'type': 'MultiLineString',
-            'coordinates': data
-          }
+  addActivities(map, datasrc) {
+    map.addSource('activities', {
+      'type': 'geojson',
+      'data': {
+        'type': 'Feature',
+        'properties': {},
+        'geometry': {
+          'type': 'MultiLineString',
+          'coordinates': datasrc
         }
-      });
-    }
+      }
+    });
+  }
 
-    displayDateSource(map) {
-      map.addLayer({
-        'id': 'test',
-        'type': 'line',
-        'source': 'test',
-        'layout': {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        'paint': {
-          'line-color': '#888',
-          'line-width': 8
-        }
-      });
-    }
+  displayActivities(map) {
+    map.addLayer({
+      'id': 'activities',
+      'type': 'line',
+      'source': 'activities',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#3386c0',
+        'line-width': 5
+      }
+    });
+  }
 
-
-
+  //create initial map
   componentDidMount() {
 
-    //creates map  
+    //creates map and stores a reference in state
     const map = this.newMap()
-    
+    this.setState({ map });
+
     map.on('load', () => {
       
       // zoom to activities
       this.zoomIn(map)
 
       //provide data to map
-      this.addDataSource(map, this.state.selected_activities)
+      this.addActivities(map, this.state.selected_activities)
       
       //display data on map
-      this.displayDateSource(map)
-      
+      this.displayActivities(map)
+
     });
   }
 
@@ -145,8 +162,19 @@ export default class HelloWorld extends React.Component {
 
   updateMap() {
     this.activityFilterAndParseForMap()
-    this.zoomIn(map)
+          
+    // zoom to activities
+    this.zoomIn(this.state.map)
 
+    //remove old activities
+    this.state.map.removeLayer('activities');
+    this.state.map.removeSource('activities');
+    
+    
+    //update display
+    this.addActivities(this.state.map, this.state.selected_activities)
+    this.displayActivities(this.state.map)
+      
   }
 
   render() {
@@ -165,7 +193,7 @@ export default class HelloWorld extends React.Component {
               }}
               onChange={(e) => {
                 this.updateStartdate(e[0])
-                // this.updateEnddate(e[1])
+                this.filterWithRails()
                 this.updateMap()
               }}
             />
@@ -177,7 +205,7 @@ export default class HelloWorld extends React.Component {
               }}
               onChange={(e) => {
                 this.updateEnddate(e[0])
-                this.updateMap  ()
+                this.updateMap()
               }}
             />
           </form>
