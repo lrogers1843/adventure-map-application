@@ -20,29 +20,24 @@ export default class HelloWorld extends React.Component {
 
     // How to set initial state in ES6 class syntax
     // https://reactjs.org/docs/state-and-lifecycle.html#adding-local-state-to-a-class
-
-    var activities_count = this.props.activities.length;
-    var activities = this.props.activities;
-    var zooms = [];
-    var selected_activities = [];
-    for (var i = 0; i < activities_count-1; i++) {
-      // if (activities[i].startdate >= this.state.startdate && activities[i].enddate >= this.state.enddate) {
-        var activity_coordinates = polyline.toGeoJSON(activities[i].polymap).coordinates; //gets activity coords
-        zooms = zooms.concat(activity_coordinates); //appends for zooms
-        selected_activities.push(activity_coordinates); //appends for display
-      // };
-    };
+  
     this.state = { 
-      startdate: new Date(activities[activities_count-1].start_date),
-      enddate: new Date(activities[0].start_date),
-      selected_activities: selected_activities, //array of all activity coordinates in individual arrays, for activity display
-      zoom_coords: zooms, // array of all activity coordinates, for map zoom
-      activity_type: "Kayaking",
+      start_date: this.props.start_date,
+      end_date: this.props.end_date,
+      activities: this.props.activities,
+      geojson: this.props.geojson,
+      types: this.props.types,
+      zoom_coords: this.props.zoom_coords,
+      activity_type: "",
     };
+    console.log("constructor end")
+    console.log(this.props)
   }
   
-  filterWithRails() {
-    var data = (({ startdate, enddate, activity_type }) => ({ startdate, enddate, activity_type }))(this.state);
+  getActivities(filters) {
+    var data = (({ start_date, end_date, activity_type }) => ({ start_date, end_date, activity_type }))(filters);
+    var that = this
+    console.log(data)
     fetch("/activities/filter", {
       method: 'POST',
       headers:  {
@@ -52,20 +47,28 @@ export default class HelloWorld extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(result => console.log(result))
-  };
+    .then(function(json) {
+      that.setState({
+        activities: json[0],
+        geojson: json[1], 
+        types: json[2],
+        zoom_coords: json[3],
+      });
+      console.log("fetch end")
+      console.log(json);
+    });
+  }
 
-  //updates state: zoom_coords and selected_activities
   activityFilterAndParseForMap() {
     var count = this.props.activities.length;
     var activities = this.props.activities;
     var zooms = [];
     var selected_activities = [];
-    var startdate = this.state.startdate
-    var enddate = this.state.enddate
+    var start_date = this.state.start_date
+    var end_date = this.state.end_date
     for (var i = 0; i < count-1; i++) {
       var activity_date = new Date(activities[i].start_date)
-      if (activity_date >= startdate && activity_date <= enddate) {
+      if (activity_date >= start_date && activity_date <= end_date) {
         var activity_coordinates = polyline.toGeoJSON(activities[i].polymap).coordinates; //gets activity coords
         zooms = zooms.concat(activity_coordinates); //appends for zooms
         selected_activities.push(activity_coordinates); //appends for display
@@ -74,6 +77,7 @@ export default class HelloWorld extends React.Component {
     this.setState({zoom_coords: zooms, selected_activities: selected_activities});
   }
   newMap(){ 
+    console.log("newmap")
   return (
     new mapboxgl.Map({
       container: this.mapContainer,
@@ -84,8 +88,10 @@ export default class HelloWorld extends React.Component {
     )
   }
   
-  zoomIn(map) {
-    var coordinates = this.state.zoom_coords;
+  zoomIn(map, coords) {
+    console.log("zoom")
+
+    var coordinates = coords;
     var bounds = coordinates.reduce(function(bounds, coord) {
       return bounds.extend(coord);
     }, 
@@ -96,20 +102,14 @@ export default class HelloWorld extends React.Component {
   }
 
   addActivities(map, datasrc) {
-    map.addSource('activities', {
-      'type': 'geojson',
-      'data': {
-        'type': 'Feature',
-        'properties': {},
-        'geometry': {
-          'type': 'MultiLineString',
-          'coordinates': datasrc
-        }
-      }
-    });
+    console.log("addsrc")
+
+    map.addSource('activities', datasrc);
   }
 
   displayActivities(map) {
+    console.log("display")
+
     map.addLayer({
       'id': 'activities',
       'type': 'line',
@@ -125,9 +125,8 @@ export default class HelloWorld extends React.Component {
     });
   }
 
-  //create initial map
   componentDidMount() {
-
+    console.log("did mount")
     //creates map and stores a reference in state
     const map = this.newMap()
     this.setState({ map });
@@ -135,10 +134,10 @@ export default class HelloWorld extends React.Component {
     map.on('load', () => {
       
       // zoom to activities
-      this.zoomIn(map)
+      this.zoomIn(map, this.state.zoom_coords)
 
       //provide data to map
-      this.addActivities(map, this.state.selected_activities)
+      this.addActivities(map, this.state.geojson)
       
       //display data on map
       this.displayActivities(map)
@@ -146,12 +145,12 @@ export default class HelloWorld extends React.Component {
     });
   }
 
-  updateStartdate = (startdate) => {
-    this.setState({ startdate });
+  updateStartdate = (start_date) => {
+    this.setState({ start_date });
   };
   
-  updateEnddate = (enddate) => {
-    this.setState({ enddate });
+  updateEnddate = (end_date) => {
+    this.setState({ end_date });
   };
 
   updateMap() {
@@ -172,6 +171,7 @@ export default class HelloWorld extends React.Component {
   }
 
   render() {
+    console.log("render")
     return (
       <>
       <div ref={el => this.mapContainer = el} className='mapContainer' />
@@ -181,19 +181,18 @@ export default class HelloWorld extends React.Component {
           <form >
             <h3>Start Date</h3>
             <Flatpickr
-            value={this.state.startdate}
+            value={this.state.start_date}
               options={{
                 dateFormat:"n/j/Y",
               }}
               onChange={(e) => {
                 this.updateStartdate(e[0])
-                this.filterWithRails()
-                this.updateMap()
+                console.log(this.state)
               }}
             />
             <h3>End Date</h3>
             <Flatpickr
-            value={this.state.enddate} 
+            value={this.state.end_date} 
               options={{
                 dateFormat:"n/j/Y",
               }}
@@ -202,9 +201,16 @@ export default class HelloWorld extends React.Component {
                 this.updateMap()
               }}
             />
-            <h3>Activity</h3>
-            <select>{[]}</select>
-
+            <h3>Activity Type</h3>
+            <div>
+              <select 
+              value={this.state.activity_type}
+              onChange={(e) => this.setState({activity_type: e.target.value})}
+              >
+                {this.state.types.map((type) => <option key={type.value} value={type.value}>{type.display}</option>)}
+              </select>
+            </div>
+            <button onClick={() => console.log(this.state.types)}>act</button>
           </form>
         </div>
 

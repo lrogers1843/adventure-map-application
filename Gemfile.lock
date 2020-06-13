@@ -129,6 +129,7 @@ GEM
       railties (>= 4.2.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
+    fast-polylines (2.0.1)
     ffi (1.12.2)
     foreman (0.87.1)
     formulaic (0.4.1)
@@ -266,6 +267,9 @@ GEM
     responders (3.0.0)
       actionpack (>= 5.0)
       railties (>= 5.0)
+    rgeo (2.1.1)
+    rgeo-geojson (2.1.1)
+      rgeo (>= 1.0.0)
     rspec-core (3.9.1)
       rspec-support (~> 3.9.1)
     rspec-expectations (3.9.0)
@@ -377,6 +381,7 @@ DEPENDENCIES
   devise
   dotenv-rails
   factory_bot_rails
+  fast-polylines (~> 2.0.0)
   foreman (~> 0.87.1)
   formulaic
   high_voltage
@@ -399,6 +404,7 @@ DEPENDENCIES
   rails (~> 6.0.0)
   react_on_rails (= 11.3.0)
   recipient_interceptor
+  rgeo-geojson
   rspec-rails (~> 3.6)
   sassc-rails
   shoulda-matchers

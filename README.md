@@ -73,6 +73,9 @@ achieved, just a small snag until saved map on state to provide reference for up
 new call from component using JS fetch()
 new route @ activities/filter
 new controller method activities#filter to handle params and return JSON
+### Ruby Polyline decode
+storing coordinates new array column in app/services/strava/activities.rb:  
+map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]),
 
 
 

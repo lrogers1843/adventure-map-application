@@ -1,6 +1,6 @@
 module Strava
   class Activities
-
+    require "fast_polylines"
     def initialize (user)
         @user = user
     end    
@@ -66,9 +66,13 @@ module Strava
           end_lng: activity["end_latlng"][1],
           workout_type: activity["type"],
           polymap: activity["map"]["summary_polyline"],
+          map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]).map{ |pair|  
+            lat = pair.shift 
+            pair.push(lat)}, # switch order
           created_at: "nil",
           updated_at: "nil",
         }
+        p params[:map_coords]
         @user.activities.create(params)
       end
     end
