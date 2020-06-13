@@ -74,9 +74,8 @@ new call from component using JS fetch()
 new route @ activities/filter
 new controller method activities#filter to handle params and return JSON
 ### Ruby Polyline decode
-storing coordinates new array column in app/services/strava/activities.rb:  
-map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]),
-
+storing coordinates in new array column (map_coords:) in app/services/strava/activities.rb:  
+switching lat/long order there
 
 
 
