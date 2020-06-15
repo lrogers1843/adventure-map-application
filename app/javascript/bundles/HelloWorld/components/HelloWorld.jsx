@@ -30,14 +30,16 @@ export default class HelloWorld extends React.Component {
       zoom_coords: this.props.zoom_coords,
       activity_type: "",
     };
-    console.log("constructor end")
     console.log(this.props)
+    console.log("constructor end")
   }
   
   getActivities(filters) {
     var data = (({ start_date, end_date, activity_type }) => ({ start_date, end_date, activity_type }))(filters);
     var that = this
+    console.log("getting activities")
     console.log(data)
+
     fetch("/activities/filter", {
       method: 'POST',
       headers:  {
@@ -76,6 +78,7 @@ export default class HelloWorld extends React.Component {
     };
     this.setState({zoom_coords: zooms, selected_activities: selected_activities});
   }
+
   newMap(){ 
     console.log("newmap")
   return (
@@ -125,6 +128,14 @@ export default class HelloWorld extends React.Component {
     });
   }
 
+  updateStartdate = (start_date) => {
+    this.setState({ start_date });
+  };
+  
+  updateEnddate = (end_date) => {
+    this.setState({ end_date });
+  };
+
   componentDidMount() {
     console.log("did mount")
     //creates map and stores a reference in state
@@ -145,19 +156,16 @@ export default class HelloWorld extends React.Component {
     });
   }
 
-  updateStartdate = (start_date) => {
-    this.setState({ start_date });
-  };
-  
-  updateEnddate = (end_date) => {
-    this.setState({ end_date });
-  };
+  // componentDidUpdate() {
+  //   this.updateMap()
+  // }
 
   updateMap() {
-    this.activityFilterAndParseForMap()
+    console.log("update map")
+    this.getActivities(this.state)
           
     // zoom to activities
-    this.zoomIn(this.state.map)
+    this.zoomIn(this.state.map, this.state.zoom_coords)
 
     //remove old activities
     this.state.map.removeLayer('activities');
@@ -165,13 +173,16 @@ export default class HelloWorld extends React.Component {
     
     
     //update display
-    this.addActivities(this.state.map, this.state.selected_activities)
+    this.addActivities(this.state.map, this.state.geojson)
     this.displayActivities(this.state.map)
       
   }
 
   render() {
     console.log("render")
+    if (this.state.map) {
+    this.updateMap()
+    }
     return (
       <>
       <div ref={el => this.mapContainer = el} className='mapContainer' />

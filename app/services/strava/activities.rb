@@ -72,7 +72,6 @@ module Strava
           created_at: "nil",
           updated_at: "nil",
         }
-        p params[:map_coords]
         @user.activities.create(params)
       end
     end
