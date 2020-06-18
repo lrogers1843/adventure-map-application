@@ -28,15 +28,16 @@ export default class HelloWorld extends React.Component {
       geojson: this.props.geojson,
       types: this.props.types,
       zoom_coords: this.props.zoom_coords,
+      map_style: this.props.map_style,
       activity_type: "",
     };
     console.log(this.props)
     console.log("constructor end")
   }
   
-  getActivities(filters) {
-    var data = (({ start_date, end_date, activity_type }) => ({ start_date, end_date, activity_type }))(filters);
-    var that = this
+  getActivities() {
+
+    var data = (({ start_date, end_date, activity_type }) => ({ start_date, end_date, activity_type }))(this.state);
     console.log("getting activities")
     console.log(data)
 
@@ -49,13 +50,13 @@ export default class HelloWorld extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(function(json) {
-      that.setState({
-        activities: json[0],
-        geojson: json[1], 
+    .then( (json) => {
+      this.setState({
+        activities: json[1],
+        geojson: json[0], 
         types: json[2],
         zoom_coords: json[3],
-      });
+      }, this.updateMap);
       console.log("fetch end")
       console.log(json);
     });
@@ -84,24 +85,26 @@ export default class HelloWorld extends React.Component {
   return (
     new mapboxgl.Map({
       container: this.mapContainer,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: 'mapbox://styles/' + this.state.map_style,
       center: [-80.5, 35],
       zoom: 9
     })
     )
   }
   
-  zoomIn(map, coords) {
+  zoomIn = (e) => {
     console.log("zoom")
-
-    var coordinates = coords;
+    e.preventDefault();
+    var coordinates = this.state.zoom_coords;
     var bounds = coordinates.reduce(function(bounds, coord) {
       return bounds.extend(coord);
     }, 
     new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-    map.fitBounds(bounds, {
+    console.log("new")
+    this.state.map.fitBounds(bounds, {
     padding: 50
     });
+    console.log("zoom done")
   }
 
   addActivities(map, datasrc) {
@@ -122,19 +125,28 @@ export default class HelloWorld extends React.Component {
         'line-cap': 'round'
       },
       'paint': {
-        'line-color': '#3386c0',
-        'line-width': 5
+        'line-color': 'red',
+        'line-width': 4
       }
     });
   }
 
   updateStartdate = (start_date) => {
-    this.setState({ start_date });
+    this.setState({ start_date }, this.getActivities );
   };
   
   updateEnddate = (end_date) => {
-    this.setState({ end_date });
+    this.setState({ end_date }, this.getActivities );
   };
+
+  updateStyle = (e) => {
+    this.setState({ map_style: e.target.value }, this.changeStyle );
+  };
+
+  changeStyle() {
+    this.state.map.setStyle('mapbox://styles/' + this.state.map_style)
+    this.getActivities()  
+  }
 
   componentDidMount() {
     console.log("did mount")
@@ -144,9 +156,6 @@ export default class HelloWorld extends React.Component {
 
     map.on('load', () => {
       
-      // zoom to activities
-      this.zoomIn(map, this.state.zoom_coords)
-
       //provide data to map
       this.addActivities(map, this.state.geojson)
       
@@ -154,38 +163,57 @@ export default class HelloWorld extends React.Component {
       this.displayActivities(map)
 
     });
+
+    map.on('click', 'activities', function(e) {    
+      var props = e.features[0].properties;
+      props = JSON.stringify(props)
+      props = props.replace(/"/g, '')
+      props = props.replace(/{/g, '')
+      props = props.replace(/}/g, '')
+      props = props.replace(/,/g, '<br>')
+      props = props.replace(/:/g, ': ')
+
+      new mapboxgl.Popup()
+      .setLngLat(e.lngLat)
+      .setHTML(props)
+      .addTo(map);
+    });
+
+    //chenge mouse from pointer on enter activity
+    map.on('mouseenter', 'activities', function() {
+    map.getCanvas().style.cursor = 'pointer';
+    });
+      
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'activities', function() {
+    map.getCanvas().style.cursor = '';
+    });
+
   }
 
-  // componentDidUpdate() {
-  //   this.updateMap()
-  // }
-
   updateMap() {
+    var map = this.state.map
     console.log("update map")
-    this.getActivities(this.state)
-          
-    // zoom to activities
-    this.zoomIn(this.state.map, this.state.zoom_coords)
+    console.log(this.state)
 
     //remove old activities
-    this.state.map.removeLayer('activities');
-    this.state.map.removeSource('activities');
-    
+    if (map.getLayer('activities')) {
+    map.removeLayer('activities');
+    map.removeSource('activities');
+    }
     
     //update display
-    this.addActivities(this.state.map, this.state.geojson)
-    this.displayActivities(this.state.map)
-      
+    this.addActivities(map, this.state.geojson)
+    this.displayActivities(map)
   }
 
   render() {
-    console.log("render")
-    if (this.state.map) {
-    this.updateMap()
-    }
     return (
       <>
-      <div ref={el => this.mapContainer = el} className='mapContainer' />
+      <div 
+        ref={el => this.mapContainer = el} 
+        className='mapContainer'
+        />
 
       <div className="navbar">
         <div> {/* date inputs */}
@@ -209,22 +237,75 @@ export default class HelloWorld extends React.Component {
               }}
               onChange={(e) => {
                 this.updateEnddate(e[0])
-                this.updateMap()
               }}
             />
             <h3>Activity Type</h3>
             <div>
               <select 
               value={this.state.activity_type}
-              onChange={(e) => this.setState({activity_type: e.target.value})}
+              onChange={(e) => {
+                this.setState({activity_type: e.target.value}, this.getActivities );
+              }
+              }
               >
                 {this.state.types.map((type) => <option key={type.value} value={type.value}>{type.display}</option>)}
               </select>
             </div>
-            <button onClick={() => console.log(this.state.types)}>act</button>
+            <h3>Map Style</h3>
+            <label>
+              <input
+                type="radio"
+                value="mapbox/outdoors-v11"
+                checked={this.state.map_style === "mapbox/outdoors-v11"}
+                onChange={this.updateStyle}
+              />
+              Outdoors
+            </label>
+            <br></br>
+            <label>
+              <input
+                type="radio"
+                value="mapbox/streets-v11"
+                checked={this.state.map_style === "mapbox/streets-v11"}
+                onChange={this.updateStyle}
+              />
+              Streets
+            </label>
+            <br></br>
+            <label>
+              <input
+                type="radio"
+                value="mapbox/satellite-v9"
+                checked={this.state.map_style === "mapbox/satellite-v9"}
+                onChange={this.updateStyle}
+              />
+              Satellite
+            </label>
+            <br></br>
+            <label>
+              <input
+                type="radio"
+                value="mapbox/dark-v10"
+                checked={this.state.map_style === "mapbox/dark-v10"}
+                onChange={this.updateStyle}
+              />
+              Dark
+            </label>
+            <br></br>
+            <label>
+              <input
+                type="radio"
+                value="lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"
+                checked={this.state.map_style === "lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"}
+                onChange={this.updateStyle}
+              />
+              Pencil
+            </label>
+            <br></br>
+            <h3>Zoom to Full Activities</h3>
+            <button onClick={this.zoomIn}>Zoom</button>
           </form>
         </div>
-
       </div>
       </>
     )

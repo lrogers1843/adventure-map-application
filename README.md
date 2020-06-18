@@ -82,7 +82,8 @@ switching lat/long order there
 
 ### To-do
 figure out why strava is pulling n-1 activities
-css framework
+css framework?
+pull data only after initial load, not just all be default
 
 
 ## Getting Started

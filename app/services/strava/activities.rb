@@ -55,7 +55,7 @@ module Strava
         params = {
           name: activity["name"],
           description: "nil",
-          distance: activity["distance"],
+          distance: (activity["distance"].to_f/1609).round(2),
           total_elevation_gain: activity["total_elevation_gain"],
           moving_time: activity["moving_time"],
           elapsed_time: activity["elapsed_time"],

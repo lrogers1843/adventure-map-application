@@ -34,26 +34,11 @@ class ActivitiesController < ApplicationController
     end
     p activities.count
 
-    activities = Activity.last(3)
-    features = []
-    activities.each do |a|
-      feature = {
-        'type': 'Feature',
-        'properties': {
-        'name': a.name
-        },
-        'geometry': {
-        'type': 'LineString',
-        'coordinates': a.map_coords
-        }
-      }
-    features.push(feature)
-    end
     geojson = {
       'type': 'geojson',
       'data': {
       'type': 'FeatureCollection',
-      'features': features
+      'features': activities.map{|a| a.to_geojson }
       }
     }
 
