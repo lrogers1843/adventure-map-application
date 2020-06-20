@@ -7,7 +7,7 @@ class ActivitiesController < ApplicationController
 
     # type conversion to sync with active record
     params_start = Time.zone.parse(params[:start_date])
-    params_end = Time.zone.parse(params[:end_date])
+    params_end = Time.zone.parse(params[:end_date]) + 1.day
 
     # get initial set by date
     activities = current_user.activities.where(start_date: params_start..params_end)

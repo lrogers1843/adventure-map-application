@@ -18,8 +18,15 @@ border: none;
 padding: 0% 1%;
 width: 13%;
 height: 100%;
-
 }
+.mapboxgl-map .mapboxgl-popup{
+    position: absolute;
+    left: 50%;
+    top: 0;
+    position:fixed;
+    transform:none !important;
+}
+.mapboxgl-map .mapboxgl-popup-tip{display:none;}
 
 </style>
 <%= react_component("HelloWorld", props: @hello_world_props, prerender: false) %> 

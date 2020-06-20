@@ -117,6 +117,20 @@ export default class HelloWorld extends React.Component {
     console.log("display")
 
     map.addLayer({
+      'id': 'activities-light',
+      'type': 'line',
+      'source': 'activities',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': 'grey',
+        'line-opacity': 1,
+        'line-width': 2,
+      }
+    });
+    map.addLayer({
       'id': 'activities',
       'type': 'line',
       'source': 'activities',
@@ -126,7 +140,13 @@ export default class HelloWorld extends React.Component {
       },
       'paint': {
         'line-color': 'red',
-        'line-width': 4
+        'line-opacity': 1,
+        'line-width': [
+          'case',
+          ['boolean', ['feature-state', 'selected'], false],
+          4,
+          2
+          ]
       }
     });
   }
@@ -145,60 +165,105 @@ export default class HelloWorld extends React.Component {
 
   changeStyle() {
     this.state.map.setStyle('mapbox://styles/' + this.state.map_style)
-    this.getActivities()  
   }
 
   componentDidMount() {
     console.log("did mount")
     //creates map and stores a reference in state
     const map = this.newMap()
-    this.setState({ map });
+    var hoveredStateId = null;
+    this.setState({ map }, () => {
+      console.log("adding event listeners")
+      //load data after style
+      map.on('style.load', () => {this.updateMap()})
+      // Change it back to a pointer when it leaves.
+      map.on('mouseleave', 'activities', () => {this.mouseLeave()})
+      //chenge mouse from pointer on enter activity
+      map.on('mouseenter', 'activities', () => {this.mouseEnter()})
+      //popup
+      map.on('click', 'activities', (e) => {this.displaySelected(e)})
+    })      
 
-    map.on('load', () => {
-      
-      //provide data to map
-      this.addActivities(map, this.state.geojson)
-      
-      //display data on map
-      this.displayActivities(map)
+    map.on('mousemove', 'activities', function(e) {
+      if (e.features.length > 0) {
+        // map.setPaintProperty('activities', 'line-opacity', ['match', ['to-number', ['get', 'id']], e.features[0].id, 1 , 0.25])
+        // map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])        // console.log(e.features[0].id)
 
+        // if (hoveredStateId) {
+        //   map.setFeatureState(
+        //     { source: 'activities', id: hoveredStateId },
+        //     { hover: false }
+        //   );
+        // }
+        // hoveredStateId = e.features[0].id;
+        // console.log(hoveredStateId)
+        // map.setFeatureState(
+        //   { source: 'activities', id: hoveredStateId },
+        //   { hover: true }
+        // );
+      }
     });
-
-    map.on('click', 'activities', function(e) {    
-      var props = e.features[0].properties;
-      props = JSON.stringify(props)
-      props = props.replace(/"/g, '')
-      props = props.replace(/{/g, '')
-      props = props.replace(/}/g, '')
-      props = props.replace(/,/g, '<br>')
-      props = props.replace(/:/g, ': ')
-
-      new mapboxgl.Popup()
-      .setLngLat(e.lngLat)
-      .setHTML(props)
-      .addTo(map);
-    });
-
-    //chenge mouse from pointer on enter activity
-    map.on('mouseenter', 'activities', function() {
-    map.getCanvas().style.cursor = 'pointer';
-    });
-      
-    // Change it back to a pointer when it leaves.
     map.on('mouseleave', 'activities', function() {
-    map.getCanvas().style.cursor = '';
+      // map.setFilter('activities', null)
+      // if (hoveredStateId) {
+      // map.setFeatureState(
+      // { source: 'activities', id: hoveredStateId },
+      // { hover: false }
+      // );
+      // }
+      // hoveredStateId = null;
     });
 
   }
 
-  updateMap() {
+  displaySelected(e) {
     var map = this.state.map
-    console.log("update map")
-    console.log(this.state)
+    //object cleanup for html display
+    var props = e.features[0].properties;
+    delete props.id;
+    props = JSON.stringify(props)
+    props = props.replace(/"/g, '')
+    props = props.replace(/{/g, '')
+    props = props.replace(/}/g, '')
+    props = props.replace(/,/g, '<br>')
+    props = props.replace(/:/g, ': ')
+    // popup creation and highlight
+    var popup = new mapboxgl.Popup()
+    .setLngLat(e.lngLat)
+    .setHTML(props)
+    .addTo(map);
+    var selectedStateId = e.features[0].id;
+      map.setFeatureState(
+        { source: 'activities', id: selectedStateId },
+        { selected: true }
+      );
+    map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])
+    popup.on('close', () => {
+      map.setFilter('activities', null)
+      map.setFeatureState(
+        { source: 'activities', id: selectedStateId },
+        { selected: false }
+      );
+
+    })
+  }
+
+  mouseEnter() {
+    this.state.map.getCanvas().style.cursor = 'pointer';
+  }
+
+  mouseLeave() {
+    this.state.map.getCanvas().style.cursor = '';
+  }
+
+  updateMap() {
+    console.log("starting updatemap")
+    var map = this.state.map
 
     //remove old activities
     if (map.getLayer('activities')) {
     map.removeLayer('activities');
+    map.removeLayer('activities-light');
     map.removeSource('activities');
     }
     
@@ -213,9 +278,10 @@ export default class HelloWorld extends React.Component {
       <div 
         ref={el => this.mapContainer = el} 
         className='mapContainer'
-        />
+      />
 
-      <div className="navbar">
+
+      <div ref={el => this.navbar = el} className="navbar">
         <div> {/* date inputs */}
           <form >
             <h3>Start Date</h3>
@@ -302,7 +368,7 @@ export default class HelloWorld extends React.Component {
               Pencil
             </label>
             <br></br>
-            <h3>Zoom to Full Activities</h3>
+            <h3>Zoom to Displayed Activities</h3>
             <button onClick={this.zoomIn}>Zoom</button>
           </form>
         </div>
