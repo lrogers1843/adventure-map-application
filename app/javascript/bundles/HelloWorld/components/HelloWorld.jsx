@@ -3,7 +3,7 @@ import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import polyline from '@mapbox/polyline';
 import Flatpickr from "react-flatpickr";
-import 'flatpickr/dist/themes/dark.css';
+import '~flatpickr/dist/themes/dark.css';
 mapboxgl.accessToken = 'pk.eyJ1IjoibHJvZ2VyczE4NDMiLCJhIjoiY2thZ3Fnejk2MGI3dzJwbWo0eXE1dHF6MyJ9.oYfkk7ZeGShmfugXoZ6Wkg';
 
 
