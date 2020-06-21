@@ -76,6 +76,11 @@ new controller method activities#filter to handle params and return JSON
 ### Ruby Polyline decode
 storing coordinates in new array column (map_coords:) in app/services/strava/activities.rb:  
 switching lat/long order there
+### Heroku Deploy
+had to set the following in hero webpage manually before deploy
+ASSET_HOST: siteURL.herokuapp.com
+APPLICATION_HOST: siteURL.herokuapp.com
+AUTO_MIGRATE_DB: true
 
 
 
