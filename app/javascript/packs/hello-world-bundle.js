@@ -1,7 +1,7 @@
 require("@rails/ujs").start()
 require("@rails/activestorage").start()
 require("channels")
-require("~flatpickr/dist/themes/dark.css");
+require("flatpickr/dist/themes/dark.css");
 import ReactOnRails from 'react-on-rails';
 
 import HelloWorld from '../bundles/HelloWorld/components/HelloWorld';
