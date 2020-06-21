@@ -81,6 +81,8 @@ had to set the following in hero webpage manually before deploy
 ASSET_HOST: siteURL.herokuapp.com
 APPLICATION_HOST: siteURL.herokuapp.com
 AUTO_MIGRATE_DB: true
+had to rub db: prepare
+then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
 
 
 
