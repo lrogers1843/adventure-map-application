@@ -275,6 +275,7 @@ export default class HelloWorld extends React.Component {
   render() {
     return (
       <>
+      <div>
       <div 
         ref={el => this.mapContainer = el} 
         className='mapContainer'
@@ -372,6 +373,7 @@ export default class HelloWorld extends React.Component {
             <button onClick={this.zoomIn}>Zoom</button>
           </form>
         </div>
+      </div>
       </div>
       </>
     )

@@ -90,7 +90,8 @@ then put layout "application" in hello world controller
 in application layout had to use   <%= stylesheet_pack_tag :application, media: "all" %>
   <%= render "javascript" %> links to the app/javascript/packs/application.js
   also had to require("mapbox-gl/dist/mapbox-gl.css")
-
+### rails navbar
+could not reposition map without using absolute positioning
 
 
 

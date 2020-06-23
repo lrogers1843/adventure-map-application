@@ -1,6 +1,23 @@
+.devise {
+	a {
+		color: #fff;
+	}
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 2;
+	font: bold 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	color: #fff;
+	padding: 1% 1%;
+	width: 13%;
+	text-align: center
+
+
+}
+
 .mapContainer {
 	position: absolute !important;
-	top: 0;
+	top: 0%;
 	right: 0;
 	bottom: 0;
 	width: 85%;
