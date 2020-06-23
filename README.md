@@ -83,6 +83,14 @@ APPLICATION_HOST: siteURL.herokuapp.com
 AUTO_MIGRATE_DB: true
 had to rub db: prepare
 then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
+### css rewrite
+created app/javascript/stylesheets/components/map.scss
+for include in app/javascript/stylesheets/application.scss, then include that in app/javascript/packs/application.js
+then put layout "application" in hello world controller
+in application layout had to use   <%= stylesheet_pack_tag :application, media: "all" %>
+  <%= render "javascript" %> links to the app/javascript/packs/application.js
+  also had to require("mapbox-gl/dist/mapbox-gl.css")
+
 
 
 

@@ -6,6 +6,19 @@
 require("@rails/ujs").start()
 require("@rails/activestorage").start()
 require("channels")
+require("flatpickr/dist/themes/dark.css")
+require("mapbox-gl/dist/mapbox-gl.css")
+
+import ReactOnRails from 'react-on-rails'
+import HelloWorld from '../bundles/HelloWorld/components/HelloWorld'
+
+// This is how react_on_rails can see the HelloWorld in the browser.
+ReactOnRails.register({
+  HelloWorld,
+})
+
+
+import "stylesheets/application"
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)

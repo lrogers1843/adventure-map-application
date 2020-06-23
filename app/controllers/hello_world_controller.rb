@@ -2,10 +2,10 @@
 
 class HelloWorldController < ApplicationController
   before_action :authenticate_user!
-  layout "hello_world"
+  layout "application"
 
   def index
-    Strava::Activities.refresh_activities(current_user)
+    # Strava::Activities.refresh_activities(current_user)
     map_style = "mapbox/outdoors-v11"
     start_date = current_user.activities.minimum("start_date")
     end_date = current_user.activities.maximum("start_date")
