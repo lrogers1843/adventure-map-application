@@ -1,4 +1,16 @@
 FactoryBot.define do
+  factory :social_account do
+    
+  end
+
+  factory :user_authentication do
+    
+  end
+
+  factory :authentication_provider do
+    
+  end
+
   factory :user do
     name { "MyString" }
   end

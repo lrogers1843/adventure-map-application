@@ -3,8 +3,14 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # You should configure your model like this:
   # devise :omniauthable, omniauth_providers: [:twitter]
+  include OmniConcern
 
-  # You should also create an action method in this controller like this:
+  %w[facebook twitter gplus linkedin].each do |meth|
+    define_method(meth) do
+      create
+    end
+  end
+
   def strava
     @user = User.from_omniauth(request.env["omniauth.auth"])
     if @user.persisted?
@@ -17,6 +23,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to new_user_registration_url
     end
   end
+
+
 
   def failure
     redirect_to root_path

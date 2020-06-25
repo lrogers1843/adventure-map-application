@@ -1,6 +1,19 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+
+  #multi
+  include OmniauthAttributesConcern
+    
+  has_many :user_authentications
+
+  devise :omniauthable, :database_authenticatable, :registerable,:recoverable, :rememberable, :trackable
+
+  def self.create_from_omniauth(params)
+      self.send(params.provider,params)
+  end
+
+  #strava only
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable
   devise :omniauthable, omniauth_providers: %i[strava]

@@ -40,7 +40,7 @@ Adding User and Activity
 User has many Activities, tweaking model and activity schema, plus activity controller to assign last user for testing purpose 
 ### Devise and OmniAuth
 Used devise gempage for setup, added auth to User
-In activities controller, adding auth requirement and current user as new activity owner
+In activities controller, adding auth requirement and current user as new activity owner.
 adding gem "omniauth-strava", skipped config/initializers/omniauth.rb and contents
 db add the columns "provider" (string) and "uid" (string) to your User model.
 config/initializers/devise.rb add config.omniauth
