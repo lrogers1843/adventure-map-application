@@ -91,7 +91,14 @@ in application layout had to use   <%= stylesheet_pack_tag :application, media: 
   <%= render "javascript" %> links to the app/javascript/packs/application.js
   also had to require("mapbox-gl/dist/mapbox-gl.css")
 ### rails navbar
-could not reposition map without using absolute positioning
+could not reposition map without using absolute positioning, didn't want to absolute position everything, decided to just render the logout with rails on top of the navbar js
+### multiauth
+https://github.com/virtualforce/Devise-Omniauth-Multiple-Providers
+created models
+-authentication_provider.rb
+-social_accounts
+-user_authentications 
+
 
 
 

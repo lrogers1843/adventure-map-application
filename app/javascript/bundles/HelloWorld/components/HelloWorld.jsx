@@ -369,6 +369,16 @@ export default class HelloWorld extends React.Component {
               Pencil
             </label>
             <br></br>
+            <label>
+              <input
+                type="radio"
+                value="lrogers1843/ckby3o0b81vlg1io6gtci8zx6"
+                checked={this.state.map_style === "lrogers1843/ckby3o0b81vlg1io6gtci8zx6"}
+                onChange={this.updateStyle}
+              />
+              Treasure
+            </label>
+            <br></br>
             <h3>Zoom to Displayed Activities</h3>
             <button onClick={this.zoomIn}>Zoom</button>
           </form>

@@ -5,24 +5,24 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # devise :omniauthable, omniauth_providers: [:twitter]
   include OmniConcern
 
-  %w[facebook twitter gplus linkedin].each do |meth|
+  %w[facebook twitter gplus linkedin strava].each do |meth|
     define_method(meth) do
       create
     end
   end
 
-  def strava
-    @user = User.from_omniauth(request.env["omniauth.auth"])
-    if @user.persisted?
-      p "persisted"
-      sign_in_and_redirect @user # event: :authentication (this for Warden callbacks) #this will throw if @user is not activated
-      set_flash_message(:notice, :success, kind: "Strava") if is_navigational_format?
-    else
-      p "not persisted"
-      session["devise.strava_data"] = request.env["omniauth.auth"]
-      redirect_to new_user_registration_url
-    end
-  end
+  # def strava
+  #   @user = User.from_omniauth(request.env["omniauth.auth"])
+  #   if @user.persisted?
+  #     p "persisted"
+  #     sign_in_and_redirect @user # event: :authentication (this for Warden callbacks) #this will throw if @user is not activated
+  #     set_flash_message(:notice, :success, kind: "Strava") if is_navigational_format?
+  #   else
+  #     p "not persisted"
+  #     session["devise.strava_data"] = request.env["omniauth.auth"]
+  #     redirect_to new_user_registration_url
+  #   end
+  # end
 
 
 

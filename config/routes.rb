@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
   resources :users
   resources :activities
-  get 'hello_world', to: 'hello_world#index'
+  get 'map', to: 'map#index'
   post 'activities/filter', to: 'activities#filter'
-  root 'hello_world#index'
+  root 'application#welcome'
 end

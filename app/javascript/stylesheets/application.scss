@@ -1,1 +1,11 @@
+body {
+    &, .navbar { 
+    // background: url('../../../app/assets/images/background-unsplash.jpg') 50% 50% no-repeat; 
+    // background-size: 100%;
+    // font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: #3288bd;
+    color: #000;
+    }
+  }
+
 @import 'components/map';
