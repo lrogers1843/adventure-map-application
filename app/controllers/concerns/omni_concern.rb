@@ -4,13 +4,19 @@ module OmniConcern
         auth_params = request.env["omniauth.auth"]
         provider = AuthenticationProvider.get_provider_name(auth_params.try(:provider)).first
         authentication = provider.user_authentications.where(uid: auth_params.uid).first
-        existing_user = User.where('strava_uid = ?', auth_params['uid']).try(:first)
+        # existing_user = User.where('strava_uid = ?', auth_params['uid']).try(:first)
+        existing_user = current_user
+        p provider.name
+        existing_user.send(:"#{provider.name}_data=", auth_params)
         p existing_user
-        p authentication
-        p user_signed_in?
+        # could go to model and write something called before_save for all the token and expirations
+        existing_user.save
+
         if user_signed_in?
           SocialAccount.get_provider_account(current_user.id,provider.id).first_or_create(user_id: current_user.id ,  authentication_provider_id: provider.id , token: auth_params.try(:[],"credentials").try(:[],"token") , secret: auth_params.try(:[],"credentials").try(:[],"secret"))
           redirect_to new_user_registration_url
+
+        # all these other cases will never happen if we login before strava oauth
         elsif authentication
           create_authentication_and_sign_in(auth_params, existing_user, provider)
         else

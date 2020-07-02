@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_27_173841) do
+ActiveRecord::Schema.define(version: 2020_07_02_030403) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,8 +97,11 @@ ActiveRecord::Schema.define(version: 2020_06_27_173841) do
     t.string "strava_user_token"
     t.string "strava_user_refresh_token"
     t.integer "strava_user_token_expiration"
-    t.json "response", default: "{}", null: false
-    t.string "strava_uid"
+    t.jsonb "strava_data"
+    t.jsonb "google_oauth2_data"
+    t.string "google_access_token"
+    t.time "google_access_token_expiration"
+    t.string "google_refresh_token"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

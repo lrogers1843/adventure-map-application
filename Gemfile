@@ -27,6 +27,8 @@ gem 'react_on_rails', '11.3.0'
 gem 'devise'
 gem 'httparty'
 gem "fast-polylines", "~> 2.0.0"
+gem 'wicked'
+gem 'omniauth-google-oauth2'
 
 group :development do
   gem "listen"

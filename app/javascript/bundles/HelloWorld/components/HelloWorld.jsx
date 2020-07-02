@@ -94,7 +94,7 @@ export default class HelloWorld extends React.Component {
   
   zoomIn = (e) => {
     console.log("zoom")
-    e.preventDefault();
+    e.preventDefault()
     var coordinates = this.state.zoom_coords;
     var bounds = coordinates.reduce(function(bounds, coord) {
       return bounds.extend(coord);
@@ -272,6 +272,32 @@ export default class HelloWorld extends React.Component {
     this.displayActivities(map)
   }
 
+  photosTest= (e) => {
+    e.preventDefault()
+
+    fetch("/users/refresh_google_token", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+    })
+    .then(response => response.json())
+    .then( (json) => console.log(json));
+
+    fetch("https://photoslibrary.googleapis.com/v1/mediaItems", {
+      method: 'GET',
+      headers:  {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ya29.a0AfH6SMC7g_NukW6kB4OXvvV7F9lewznFTqBIysnZ8IZODcy1lvVvAJiCg7Tt2Sk9SYVL6ieurmZu3nNCesr9h2emr8coNhDg_NjbvKLmI_e0JwYCsLM9vgUEGGet7n3W8mmkC9Ndkxk2qHtDKQgmPHWBKY2VWgYg2jk-"
+      },
+      // body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then( (json) => console.log(json));
+
+  }
+
   render() {
     return (
       <>
@@ -381,6 +407,7 @@ export default class HelloWorld extends React.Component {
             <br></br>
             <h3>Zoom to Displayed Activities</h3>
             <button onClick={this.zoomIn}>Zoom</button>
+            <button onClick={this.photosTest}>Photos</button>
           </form>
         </div>
       </div>

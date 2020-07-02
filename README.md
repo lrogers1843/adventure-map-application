@@ -55,6 +55,7 @@ Also removed :validatable from user model devise list, and now allows me to save
 added mapbox_api_key to credentials
 put api call in app/controllers/hello_world_controller.rb, api in new folder app/services
 ### Strava
+app registered on strava devs dashboard
 api in app/services
 need user token, expiration, etc, added that to user db table
 ### MapboxGL
@@ -98,6 +99,11 @@ created models
 -authentication_provider.rb
 -social_accounts
 -user_authentications 
+callbacks now handled in app/controllers/concerns/omni_concern.rb, modified from the tutorial to save the omniauth data on the user and assume the user is logged in. now no need for app/models/concerns/omniauth_attributes_concern.rb
+### Google Oauth
+gem google oauth2
+setup new Google Cloud Platform project called adventure-map, enabled photos API, got keys and registered app there
+
 
 
 

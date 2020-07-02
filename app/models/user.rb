@@ -6,6 +6,7 @@ class User < ApplicationRecord
   include OmniauthAttributesConcern
     
   has_many :user_authentications
+  has_many :activities, dependent: :destroy
 
   devise :omniauthable, :database_authenticatable, :registerable, :recoverable, :rememberable
 
@@ -13,11 +14,28 @@ class User < ApplicationRecord
       self.send(params.provider,params)
   end
 
+  before_save :extract_omniauth_data #will this re-write strava access info when google token is refreshing, and vice-versa? may need to move it up to the callback controller
+
+  def extract_omniauth_data
+    p strava_data.present?
+    if (strava_data.present?)
+      self.strava_user_token = strava_data["credentials"]["token"]
+      self.strava_user_refresh_token = strava_data["credentials"]["refresh_token"]
+      self.strava_user_token_expiration = strava_data["credentials"]["expires_at"]
+    end
+    if (google_oauth2_data.present?)
+      p "google extract"
+      self.google_access_token = google_oauth2_data["credentials"]["token"]
+      self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
+    end
+
+
+  end
+
   #strava only
   # devise :database_authenticatable, :registerable,
   #        :recoverable, :rememberable
   # devise :omniauthable, omniauth_providers: %i[strava]
-  has_many :activities, dependent: :destroy
 
   # def self.from_omniauth(auth)
   #     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|

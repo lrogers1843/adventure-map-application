@@ -5,7 +5,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # devise :omniauthable, omniauth_providers: [:twitter]
   include OmniConcern
 
-  %w[facebook twitter gplus linkedin strava].each do |meth|
+  %w[facebook twitter gplus linkedin strava google_oauth2].each do |meth|
     define_method(meth) do
       create
     end
