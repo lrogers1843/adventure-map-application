@@ -17,6 +17,7 @@ class UsersController < ApplicationController
 
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
       p response.parsed_response
+      # here, you could merge the response into the original data hash instead of re-doing 
       user.google_access_token = response.parsed_response["token"]
       user.google_access_token_expiration = Time.now - response.parsed_response["expires_in"]
       user.google_refresh_token = response.parsed_response["refresh_token"]

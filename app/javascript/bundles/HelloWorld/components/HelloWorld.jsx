@@ -274,6 +274,7 @@ export default class HelloWorld extends React.Component {
 
   photosTest= (e) => {
     e.preventDefault()
+    console.log("api")
 
     fetch("/users/refresh_google_token", {
       method: 'POST',
@@ -285,16 +286,16 @@ export default class HelloWorld extends React.Component {
     .then(response => response.json())
     .then( (json) => console.log(json));
 
-    fetch("https://photoslibrary.googleapis.com/v1/mediaItems", {
-      method: 'GET',
-      headers:  {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ya29.a0AfH6SMC7g_NukW6kB4OXvvV7F9lewznFTqBIysnZ8IZODcy1lvVvAJiCg7Tt2Sk9SYVL6ieurmZu3nNCesr9h2emr8coNhDg_NjbvKLmI_e0JwYCsLM9vgUEGGet7n3W8mmkC9Ndkxk2qHtDKQgmPHWBKY2VWgYg2jk-"
-      },
-      // body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then( (json) => console.log(json));
+    // fetch("https://photoslibrary.googleapis.com/v1/mediaItems", {
+    //   method: 'GET',
+    //   headers:  {
+    //     "Content-Type": "application/json",
+    //     "Authorization": "Bearer var_here"
+    //   },
+    //   // body: JSON.stringify(data)
+    // })
+    // .then(response => response.json())
+    // .then( (json) => console.log(json));
 
   }
 
