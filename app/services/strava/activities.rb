@@ -60,6 +60,7 @@ module Strava
           moving_time: activity["moving_time"],
           elapsed_time: activity["elapsed_time"],
           start_date: activity["start_date_local"],
+          start_date_utc: activity["start_date"],
           start_lat: activity["start_latlng"][0],
           start_lng: activity["start_latlng"][1],
           end_lat: activity["end_latlng"][0],

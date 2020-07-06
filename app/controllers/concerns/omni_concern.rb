@@ -7,8 +7,19 @@ module OmniConcern
         # existing_user = User.where('strava_uid = ?', auth_params['uid']).try(:first)
         existing_user = current_user
         p provider.name
-        existing_user.send(:"#{provider.name}_data=", auth_params)
-        p existing_user
+        # existing_user.send(:"#{provider.name}_data=", auth_params)
+        if (provider.name == "google_oauth2")
+         existing_user.google_oauth2_data = auth_params
+         existing_user.google_access_token = auth_params["credentials"]["token"]
+         existing_user.google_access_token_expiration = Time.at(auth_params["credentials"]["expires_at"])
+         existing_user.google_refresh_token = auth_params["credentials"]["refresh_token"]
+        end
+        if (provider.name == "strava")
+          existing_user.strava_data = auth_params
+          existing_user.strava_user_token = auth_params["credentials"]["token"]
+          existing_user.strava_user_token_expiration = Time.at(auth_params["credentials"]["expires_at"])
+          existing_user.strava_user_refresh_token = auth_params["credentials"]["refresh_token"]
+         end
         # could go to model and write something called before_save for all the token and expirations
         existing_user.save
 

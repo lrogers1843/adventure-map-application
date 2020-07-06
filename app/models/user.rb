@@ -19,14 +19,14 @@ class User < ApplicationRecord
   def extract_omniauth_data
     p strava_data.present?
     if (strava_data.present?)
-      self.strava_user_token = strava_data["credentials"]["token"]
-      self.strava_user_refresh_token = strava_data["credentials"]["refresh_token"]
-      self.strava_user_token_expiration = strava_data["credentials"]["expires_at"]
+      # self.strava_user_token = strava_data["credentials"]["token"]
+      # self.strava_user_refresh_token = strava_data["credentials"]["refresh_token"]
+      # self.strava_user_token_expiration = strava_data["credentials"]["expires_at"]
     end
     if (google_oauth2_data.present?)
       p "google extract"
-      self.google_access_token = google_oauth2_data["credentials"]["token"]
-      self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
+      # self.google_access_token = google_oauth2_data["credentials"]["token"]
+      # self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
     end
 
 

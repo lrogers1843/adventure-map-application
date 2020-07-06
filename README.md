@@ -103,7 +103,10 @@ callbacks now handled in app/controllers/concerns/omni_concern.rb, modified from
 ### Google Oauth
 gem google oauth2
 setup new Google Cloud Platform project called adventure-map, enabled photos API, got keys and registered app there
-
+### TailwindCSS
+ yarn install
+ import components in app/javascript/stylesheets/application.scss
+ require in postcss.config.js
 
 
 

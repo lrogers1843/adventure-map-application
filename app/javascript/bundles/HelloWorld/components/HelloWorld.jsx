@@ -6,6 +6,34 @@ import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/dark.css';
 mapboxgl.accessToken = 'pk.eyJ1IjoibHJvZ2VyczE4NDMiLCJhIjoiY2thZ3Fnejk2MGI3dzJwbWo0eXE1dHF6MyJ9.oYfkk7ZeGShmfugXoZ6Wkg';
 
+function PhotoButton(props) {
+  if (props.toShow) {
+    return <div>
+      <p>Display Photos From Activity</p>
+      <button 
+      className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow w-2/3"
+      onClick={
+        props.onClick
+      }>Photos
+      </button>
+      </div>;
+  }
+  return null;
+}
+
+function PhotoScroller(props) {
+  if (props.toShow) {
+    return <div 
+    className="photo_scroller">
+    <button onClick={props.remove} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow w-2/3">remove</button>
+    <div>{props.activity_props}</div>
+    {props.toShow.map( (l) => <img src={l}/>)}
+    hello
+    </div>
+  }
+  return null;
+}
+
 
 export default class HelloWorld extends React.Component {
   static propTypes = {
@@ -62,23 +90,23 @@ export default class HelloWorld extends React.Component {
     });
   }
 
-  activityFilterAndParseForMap() {
-    var count = this.props.activities.length;
-    var activities = this.props.activities;
-    var zooms = [];
-    var selected_activities = [];
-    var start_date = this.state.start_date
-    var end_date = this.state.end_date
-    for (var i = 0; i < count-1; i++) {
-      var activity_date = new Date(activities[i].start_date)
-      if (activity_date >= start_date && activity_date <= end_date) {
-        var activity_coordinates = polyline.toGeoJSON(activities[i].polymap).coordinates; //gets activity coords
-        zooms = zooms.concat(activity_coordinates); //appends for zooms
-        selected_activities.push(activity_coordinates); //appends for display
-      };
-    };
-    this.setState({zoom_coords: zooms, selected_activities: selected_activities});
-  }
+  // activityFilterAndParseForMap() {
+  //   var count = this.props.activities.length;
+  //   var activities = this.props.activities;
+  //   var zooms = [];
+  //   var selected_activities = [];
+  //   var start_date = this.state.start_date
+  //   var end_date = this.state.end_date
+  //   for (var i = 0; i < count-1; i++) {
+  //     var activity_date = new Date(activities[i].start_date)
+  //     if (activity_date >= start_date && activity_date <= end_date) {
+  //       var activity_coordinates = polyline.toGeoJSON(activities[i].polymap).coordinates; //gets activity coords
+  //       zooms = zooms.concat(activity_coordinates); //appends for zooms
+  //       selected_activities.push(activity_coordinates); //appends for display
+  //     };
+  //   };
+  //   this.setState({zoom_coords: zooms, selected_activities: selected_activities});
+  // }
 
   newMap(){ 
     console.log("newmap")
@@ -181,11 +209,16 @@ export default class HelloWorld extends React.Component {
       //chenge mouse from pointer on enter activity
       map.on('mouseenter', 'activities', () => {this.mouseEnter()})
       //popup
+
+  
+
       map.on('click', 'activities', (e) => {this.displaySelected(e)})
+      //test
+
     })      
 
     map.on('mousemove', 'activities', function(e) {
-      if (e.features.length > 0) {
+      // if (e.features.length > 0) {
         // map.setPaintProperty('activities', 'line-opacity', ['match', ['to-number', ['get', 'id']], e.features[0].id, 1 , 0.25])
         // map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])        // console.log(e.features[0].id)
 
@@ -201,7 +234,7 @@ export default class HelloWorld extends React.Component {
         //   { source: 'activities', id: hoveredStateId },
         //   { hover: true }
         // );
-      }
+      // }
     });
     map.on('mouseleave', 'activities', function() {
       // map.setFilter('activities', null)
@@ -217,34 +250,74 @@ export default class HelloWorld extends React.Component {
   }
 
   displaySelected(e) {
+    console.log("activity click")
     var map = this.state.map
     //object cleanup for html display
     var props = e.features[0].properties;
-    delete props.id;
+    var endtime = new Date(props['Full_Date']) 
+    console.log(endtime)
+    endtime.setSeconds( endtime.getSeconds() + props['Total_Elapsed_Time'] )
+    this.setState( {
+      activity_datetime: new Date(props['Full_Date']),
+      activity_endtime: endtime,
+      photo_button: true,
+    }, console.log(this.state) )
+
+    delete props.id
+    delete props['Total_Elapsed_Time']
+    delete props['Full_Date']
+
     props = JSON.stringify(props)
+
+
+
     props = props.replace(/"/g, '')
     props = props.replace(/{/g, '')
     props = props.replace(/}/g, '')
-    props = props.replace(/,/g, '<br>')
+    props = props.replace(/,/g, ' ')
     props = props.replace(/:/g, ': ')
+    props = props.replace(' colon ', ':')
+
+    // add to sidebar
+    this.setState({activity_props: props}, this.photosCall())
+
     // popup creation and highlight
     var popup = new mapboxgl.Popup()
     .setLngLat(e.lngLat)
     .setHTML(props)
-    .addTo(map);
-    var selectedStateId = e.features[0].id;
-      map.setFeatureState(
-        { source: 'activities', id: selectedStateId },
-        { selected: true }
-      );
+    .addTo(map)
+
+
+    //highlight selected
+    var selectedStateId = e.features[0].id
+    map.setFeatureState(
+      { source: 'activities', id: selectedStateId },
+      { selected: true }
+    );
     map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])
+
+    // map.on('click', () => {
+    //   console.log("map click")
+    //   console.log(this.state.photo_button)
+    //   if (this.state.photo_button == true) {
+    //     map.setFilter('activities', null)
+    //     map.setFeatureState(
+    //       { source: 'activities', id: selectedStateId },
+    //       { selected: false }
+    //     )
+    //     this.setState({photo_button: false})
+    //   }
+    // })
+
+
+    //remove highlight
     popup.on('close', () => {
       map.setFilter('activities', null)
       map.setFeatureState(
         { source: 'activities', id: selectedStateId },
         { selected: false }
-      );
-
+      )
+      this.setState({photo_button: false, photos_links: null})
     })
   }
 
@@ -272,10 +345,10 @@ export default class HelloWorld extends React.Component {
     this.displayActivities(map)
   }
 
-  photosTest= (e) => {
-    e.preventDefault()
+  photosCall = (e) => {
     console.log("api")
 
+    // refresh token
     fetch("/users/refresh_google_token", {
       method: 'POST',
       headers:  {
@@ -284,47 +357,121 @@ export default class HelloWorld extends React.Component {
       },
     })
     .then(response => response.json())
-    .then( (json) => console.log(json));
+    .then( (json) => {
+      this.setState({
+        google_token: json[0]
+      }, this.getPhotos)
+    })
+  }
 
-    // fetch("https://photoslibrary.googleapis.com/v1/mediaItems", {
-    //   method: 'GET',
-    //   headers:  {
-    //     "Content-Type": "application/json",
-    //     "Authorization": "Bearer var_here"
-    //   },
-    //   // body: JSON.stringify(data)
+  getPhotos() {
+    console.log(this)
+    var date = new Date(this.state.activity_datetime)
+
+    var body = {
+      "pageSize": "100",
+      "filters": {
+        "mediaTypeFilter": {
+          "mediaTypes": [
+            "PHOTO"
+          ]
+        },
+        "dateFilter": {
+          "dates": [
+            {
+              "year": date.getFullYear(),
+              "month": date.getMonth() + 1,
+              "day": date.getDate()
+            }
+          ]
+        }
+      }
+    }  
+
+    // console.log(body)
+
+    fetch("https://photoslibrary.googleapis.com/v1/mediaItems:search", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + this.state.google_token
+      },
+      body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then( (json) => { 
+      this.filterPhotosByTime(json)
+    });
+  }
+
+  filterPhotosByTime(photos) {
+    // console.log(photos.mediaItems)
+    
+    // console.log(photos.mediaItems[0].mediaMetadata.creationTime)
+    console.log(this.state.activity_datetime)
+    console.log(this.state.activity_endtime)
+
+    var filtered_photos = photos.mediaItems.filter((picture) => {
+      return new Date(picture.mediaMetadata.creationTime) >= new Date(this.state.activity_datetime) &&
+             new Date(picture.mediaMetadata.creationTime) <= new Date(this.state.activity_endtime)
+    });
+    console.log(filtered_photos)
+    this.pushLinksToState(filtered_photos)
+
+    // var arr = [
+    //   {
+    //     'a': 1,
+    //     'b': 2
+    // }, {
+    //   'a': 1,
+    //   'b': 5
+    // }]
+    // console.log(arr)
+
+    // var result = arr.filter( (el) => {
+    //   return el.a > 0 &&
+    //   el.b < 5
     // })
-    // .then(response => response.json())
-    // .then( (json) => console.log(json));
+    // console.log(result)
+  }
 
+  pushLinksToState(photos) {
+    var links = photos.map( (p) => p.baseUrl + "=w150-h400" )
+    this.setState({photos_links: links})
+  }
+
+  removeScroller(e) {
+    e.preventDefault()
+    this.setState({photos_links: null})
   }
 
   render() {
     return (
       <>
       <div>
-      <div 
-        ref={el => this.mapContainer = el} 
-        className='mapContainer'
-      />
+        <div 
+          ref={el => this.mapContainer = el} 
+          className='mapContainer'
+        />
 
-
-      <div ref={el => this.navbar = el} className="navbar">
-        <div> {/* date inputs */}
-          <form >
-            <h3>Start Date</h3>
+        <div ref={el => this.navbar = el} className="navbar flex flex-col font-semibold">
+        <div>
+          <form className="flex flex-col items-left">
+            Start Date
             <Flatpickr
+            className="w-2/3"
             value={this.state.start_date}
               options={{
                 dateFormat:"n/j/Y",
               }}
               onChange={(e) => {
                 this.updateStartdate(e[0])
-                console.log(this.state)
               }}
             />
-            <h3>End Date</h3>
+            <br></br>
+            <p>End Date</p>
             <Flatpickr
+            className="w-2/3"
             value={this.state.end_date} 
               options={{
                 dateFormat:"n/j/Y",
@@ -333,9 +480,11 @@ export default class HelloWorld extends React.Component {
                 this.updateEnddate(e[0])
               }}
             />
-            <h3>Activity Type</h3>
+            <br></br>
+            <p>Activity Type</p>
             <div>
               <select 
+              className="w-2/3"
               value={this.state.activity_type}
               onChange={(e) => {
                 this.setState({activity_type: e.target.value}, this.getActivities );
@@ -345,7 +494,9 @@ export default class HelloWorld extends React.Component {
                 {this.state.types.map((type) => <option key={type.value} value={type.value}>{type.display}</option>)}
               </select>
             </div>
-            <h3>Map Style</h3>
+            <br></br>
+            <div>
+            <p>Map Style</p>
             <label>
               <input
                 type="radio"
@@ -406,12 +557,28 @@ export default class HelloWorld extends React.Component {
               Treasure
             </label>
             <br></br>
-            <h3>Zoom to Displayed Activities</h3>
-            <button onClick={this.zoomIn}>Zoom</button>
-            <button onClick={this.photosTest}>Photos</button>
+            </div>
+            <br></br>
+            <PhotoButton toShow={this.state.photo_button} onClick={this.photosCall.bind(this)}/>
+            {/* <p>Display Photos From Activity</p>
+            <button 
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow w-1/2"
+            onClick={this.getPhotos}
+            >Photos
+            </button> */}
+
+            <br></br>
+
+            <p>Zoom to Displayed Activities</p>
+            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow w-2/3" onClick={this.zoomIn}>Zoom</button>
           </form>
         </div>
       </div>
+      <PhotoScroller 
+      toShow={this.state.photos_links} 
+      remove={this.removeScroller.bind(this)}
+      activity_props={this.state.activity_props} 
+      />
       </div>
       </>
     )

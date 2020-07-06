@@ -4,28 +4,23 @@ class UsersController < ApplicationController
 
   def refresh_google_token
     user = current_user
-    p user
-    
     if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300) 
       p "refresh api call"
       query_params = { 
         "client_id" => Rails.application.credentials.google_client_id,
         "client_secret" => Rails.application.credentials.google_client_secret,
-        "grant_type" => "refresh_token",
-        "refresh_token" => user.google_refresh_token
+        "refresh_token" => user.google_refresh_token,
+        "grant_type" => "refresh_token"
       }
-
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
-      p response.parsed_response
-      # here, you could merge the response into the original data hash instead of re-doing 
-      user.google_access_token = response.parsed_response["token"]
-      user.google_access_token_expiration = Time.now - response.parsed_response["expires_in"]
-      user.google_refresh_token = response.parsed_response["refresh_token"]
-
+      user.google_access_token = response.parsed_response["access_token"]
+      now = Time.now
+      exp = response.parsed_response["expires_in"]
+      e = now - exp.seconds
+      user.google_access_token_expiration = e
+      user.save
     end
-
-    token = user.google_access_token
-    p token
+    token = [user.google_access_token]
     render json: token
   end
 
