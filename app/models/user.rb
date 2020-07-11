@@ -28,8 +28,24 @@ class User < ApplicationRecord
       # self.google_access_token = google_oauth2_data["credentials"]["token"]
       # self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
     end
+  end
 
+  def authorization_state
+    s = strava_authorized
+    g = google_authorized
 
+    if (!s && !g)
+      return :no_authorizations 
+    end
+    if (s && !g)
+      return :strava_authorized       
+    end
+    if (!s && g)
+      return :google_authorized       
+    end
+    if (s && g)
+      return :both_authorized       
+    end
   end
 
   #strava only

@@ -6,5 +6,6 @@ Rails.application.routes.draw do
   post 'users/refresh_google_token', to: 'users#refresh_google_token'
   get 'map', to: 'map#index'
   post 'activities/filter', to: 'activities#filter'
+  post 'activities/detailed_activity', to: 'activities#detailed_activity'
   root 'application#welcome'
 end

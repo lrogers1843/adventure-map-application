@@ -10,11 +10,11 @@ require("flatpickr/dist/themes/dark.css")
 require("mapbox-gl/dist/mapbox-gl.css")
 
 import ReactOnRails from 'react-on-rails'
-import HelloWorld from '../bundles/HelloWorld/components/HelloWorld'
+import AdventureMap from '../AdventureMap/components/AdventureMap'
 
 // This is how react_on_rails can see the HelloWorld in the browser.
 ReactOnRails.register({
-  HelloWorld,
+  AdventureMap,
 })
 
 

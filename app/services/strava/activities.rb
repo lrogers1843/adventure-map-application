@@ -1,6 +1,19 @@
 module Strava
   class Activities
     require "fast_polylines"
+
+    def get_activity_streams (id)
+      p "activity streams"
+      t = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "time", "key_by_type" => true}, headers: headers).parsed_response
+      c = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "latlng", "key_by_type" => true}, headers: headers).parsed_response
+      p "done"
+      timestamps = t["time"]["data"]
+      coords = c["latlng"]["data"]
+      p timestamps.count
+      p coords.count
+      results = [timestamps, coords]
+    end
+
     def initialize (user)
         @user = user
     end    
@@ -30,6 +43,7 @@ module Strava
     end
 
     def user_access_token
+      p "token refresh"
       query_params = { 
         "client_id" => Rails.application.credentials.strava_client_id,
         "client_secret" => Rails.application.credentials.strava_client_secret,
@@ -54,6 +68,7 @@ module Strava
       response.each do |activity|
         params = {
           name: activity["name"],
+          aid: activity["id"],
           description: "nil",
           distance: (activity["distance"].to_f/1609).round(2),
           total_elevation_gain: activity["total_elevation_gain"],
@@ -66,7 +81,7 @@ module Strava
           end_lat: activity["end_latlng"][0],
           end_lng: activity["end_latlng"][1],
           workout_type: activity["type"],
-          polymap: activity["map"]["summary_polyline"],
+          polymap: activity["map"]["polyline"],
           map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]).map{ |pair|  
             lat = pair.shift 
             pair.push(lat)}, # switch order
@@ -83,6 +98,10 @@ module Strava
 
     def self.list_activities (user)
       new(user).list_activities
+    end
+
+    def self.get_activity_streams (user, id)
+      new(user).get_activity_streams(id)
     end
 
   end

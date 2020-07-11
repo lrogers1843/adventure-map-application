@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_06_041803) do
+ActiveRecord::Schema.define(version: 2020_07_08_234344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2020_07_06_041803) do
     t.bigint "user_id"
     t.text "map_coords", default: [], array: true
     t.datetime "start_date_utc"
+    t.bigint "aid"
     t.index ["user_id"], name: "index_activities_on_user_id"
   end
 
@@ -103,6 +104,8 @@ ActiveRecord::Schema.define(version: 2020_07_06_041803) do
     t.string "google_access_token"
     t.datetime "google_access_token_expiration"
     t.string "google_refresh_token"
+    t.boolean "google_authorized", default: false, null: false
+    t.boolean "strava_authorized", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

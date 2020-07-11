@@ -1,7 +1,7 @@
 class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!
-  skip_before_action :verify_authenticity_token, only: :filter
+  skip_before_action :verify_authenticity_token, only: [:filter, :detailed_activity]
   def filter
     p params
 
@@ -53,6 +53,14 @@ class ActivitiesController < ApplicationController
     # return to app
     render json: response
     
+  end
+
+  def detailed_activity
+    p params
+    # results = Strava::Activities.get_activity_streams(current_user, params[:activity_id])
+    p current_user.authorization_state
+    s = ["1"]
+    render json: s
   end
 
   def index

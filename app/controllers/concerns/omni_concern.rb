@@ -13,12 +13,14 @@ module OmniConcern
          existing_user.google_access_token = auth_params["credentials"]["token"]
          existing_user.google_access_token_expiration = Time.at(auth_params["credentials"]["expires_at"])
          existing_user.google_refresh_token = auth_params["credentials"]["refresh_token"]
+         existing_user.google_authorized = true
         end
         if (provider.name == "strava")
           existing_user.strava_data = auth_params
           existing_user.strava_user_token = auth_params["credentials"]["token"]
           existing_user.strava_user_token_expiration = Time.at(auth_params["credentials"]["expires_at"])
           existing_user.strava_user_refresh_token = auth_params["credentials"]["refresh_token"]
+          existing_user.strava_authorized = true
          end
         # could go to model and write something called before_save for all the token and expirations
         existing_user.save
