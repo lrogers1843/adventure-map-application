@@ -1,29 +1,15 @@
+
 import PropTypes from 'prop-types';
 import React from 'react';
-import mapboxgl from 'mapbox-gl';
-import polyline from '@mapbox/polyline';
 import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/dark.css';
 import PhotoScroller from './PhotoScroller.jsx';
-mapboxgl.accessToken = 'pk.eyJ1IjoibHJvZ2VyczE4NDMiLCJhIjoiY2thZ3Fnejk2MGI3dzJwbWo0eXE1dHF6MyJ9.oYfkk7ZeGShmfugXoZ6Wkg';
-
-// function PhotoScroller(props) {
-//   if (props.activity_props) {
-//     var keys = Object.keys(props.activity_props)
-//     return <div 
-//     className="photo_scroller flex flex-col items-center overflow-y-auto text-sm text-black font-semibold">
-//     {keys.map( (k) => <p> {k + ": " + props.activity_props[k]}</p>)}
-//     {props.toShow && props.toShow.map( (l) => <img src={l}/>)} 
-//     </div>
-//   }
-//   return null;
-// }
+import MapBox from './MapBox.jsx';
 
 export default class AdventureMap extends React.Component {
   static propTypes = {
     name: PropTypes.string.isRequired, // this is passed from the Rails view
   };
-
   /**
    * @param props - Comes from your rails view.
    */
@@ -68,83 +54,18 @@ export default class AdventureMap extends React.Component {
         geojson: json[0], 
         types: json[2],
         zoom_coords: json[3],
-      }, this.updateMap);
+      })
       console.log("fetch end")
       console.log(json);
     });
   }
 
-  newMap(){ 
-    console.log("newmap")
-  return (
-    new mapboxgl.Map({
-      container: this.mapContainer,
-      style: 'mapbox://styles/' + this.state.map_style,
-      center: [-80.5, 35],
-      zoom: 9
-    })
-    )
-  }
-  
   zoomIn = (e) => {
     console.log("zoom")
     e.preventDefault()
-    var coordinates = this.state.zoom_coords;
-    var bounds = coordinates.reduce(function(bounds, coord) {
-      return bounds.extend(coord);
-    }, 
-    new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-    console.log("new")
-    this.state.map.fitBounds(bounds, {
-    padding: 50
-    });
-    console.log("zoom done")
+    this.mapbox.zoomIn(e)
   }
-
-  addActivities(map, datasrc) {
-    console.log("addsrc")
-
-    map.addSource('activities', datasrc);
-  }
-
-  displayActivities(map) {
-    console.log("display")
-
-    map.addLayer({
-      'id': 'activities-light',
-      'type': 'line',
-      'source': 'activities',
-      'layout': {
-        'line-join': 'round',
-        'line-cap': 'round'
-      },
-      'paint': {
-        'line-color': 'grey',
-        'line-opacity': 1,
-        'line-width': 2,
-      }
-    });
-    map.addLayer({
-      'id': 'activities',
-      'type': 'line',
-      'source': 'activities',
-      'layout': {
-        'line-join': 'round',
-        'line-cap': 'round'
-      },
-      'paint': {
-        'line-color': 'red',
-        'line-opacity': 1,
-        'line-width': [
-          'case',
-          ['boolean', ['feature-state', 'selected'], false],
-          4,
-          2
-          ]
-      }
-    });
-  }
-
+  
   updateStartdate = (start_date) => {
     this.setState({ start_date }, this.getActivities );
   };
@@ -154,130 +75,19 @@ export default class AdventureMap extends React.Component {
   };
 
   updateStyle = (e) => {
-    this.setState({ map_style: e.target.value }, this.changeStyle );
+    this.setState({ map_style: e.target.value });
   };
 
   changeStyle() {
     this.state.map.setStyle('mapbox://styles/' + this.state.map_style)
   }
 
-  componentDidMount() {
-    console.log("did mount")
-    //creates map and stores a reference in state
-    const map = this.newMap()
-    var hoveredStateId = null;
-    this.setState({ map }, () => {
-      console.log("adding event listeners")
-      //load data after style
-      map.on('style.load', () => {this.updateMap()})
-      // Change it back to a pointer when it leaves.
-      map.on('mouseleave', 'activities', () => {this.mouseLeave()})
-      //chenge mouse from pointer on enter activity
-      map.on('mouseenter', 'activities', () => {this.mouseEnter()})
-      //popup
-      map.on('click', 'activities', (e) => {this.displaySelected(e)})
-
-    })      
-
-    map.on('mousemove', 'activities', function(e) {
-      // if (e.features.length > 0) {
-        // map.setPaintProperty('activities', 'line-opacity', ['match', ['to-number', ['get', 'id']], e.features[0].id, 1 , 0.25])
-        // map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])        // console.log(e.features[0].id)
-
-        // if (hoveredStateId) {
-        //   map.setFeatureState(
-        //     { source: 'activities', id: hoveredStateId },
-        //     { hover: false }
-        //   );
-        // }
-        // hoveredStateId = e.features[0].id;
-        // console.log(hoveredStateId)
-        // map.setFeatureState(
-        //   { source: 'activities', id: hoveredStateId },
-        //   { hover: true }
-        // );
-      // }
-    });
-    map.on('mouseleave', 'activities', function() {
-      // map.setFilter('activities', null)
-      // if (hoveredStateId) {
-      // map.setFeatureState(
-      // { source: 'activities', id: hoveredStateId },
-      // { hover: false }
-      // );
-      // }
-      // hoveredStateId = null;
-    });
-
+  displaySelected(e, onActivitySelectedProps) {
+    this.setState(onActivitySelectedProps, this.photosCall())
   }
 
-  displaySelected(e) {
-    var map = this.state.map
-    //object cleanup for html display
-    var props = e.features[0].properties;
-    var endtime = new Date(props['Full_Date']) 
-    endtime.setSeconds( endtime.getSeconds() + props['Total_Elapsed_Time'] )
-    this.setState( {
-      activity_datetime: new Date(props['Full_Date']),
-      activity_endtime: endtime,
-    }, console.log(this.state) )
-
-    delete props.id
-    delete props['Total_Elapsed_Time']
-    delete props['Full_Date']
-
-    // add to sidebar
-    this.setState({activity_props: props}, this.photosCall())
-
-    //highlight selected
-    var selectedStateId = e.features[0].id
-    console.log(selectedStateId)
-    map.setFeatureState(
-      { source: 'activities', id: selectedStateId },
-      { selected: true }
-    )
-    map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])
-
-    // popup creation - not visible but needed for event listening
-    var popup = new mapboxgl.Popup()
-    .setLngLat(e.lngLat)
-    .setHTML(props)
-    .addTo(map)    
-
-    //remove highlight
-    popup.on('close', () => {
-      console.log("close")
-      map.setFilter('activities', null)
-      map.setFeatureState(
-        { source: 'activities', id: selectedStateId },
-        { selected: false }
-      )
-      this.setState({activity_props: null, photos_links: null})
-    })
-  }
-
-  mouseEnter() {
-    this.state.map.getCanvas().style.cursor = 'pointer';
-  }
-
-  mouseLeave() {
-    this.state.map.getCanvas().style.cursor = '';
-  }
-
-  updateMap() {
-    console.log("starting updatemap")
-    var map = this.state.map
-
-    //remove old activities
-    if (map.getLayer('activities')) {
-    map.removeLayer('activities');
-    map.removeLayer('activities-light');
-    map.removeSource('activities');
-    }
-    
-    //update display
-    this.addActivities(map, this.state.geojson)
-    this.displayActivities(map)
+  removeSelected(e) {
+    this.setState({display_props: null, photo_data: null})
   }
 
   photosCall = (e) => {
@@ -315,9 +125,11 @@ export default class AdventureMap extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then( (json) => {console.log(json)})
+    .then( (json) => this.setState({time_coords: json[0]}, console.log("coords set")))
+
 
     var date = new Date(this.state.activity_datetime)
+    // console.log(this.state.activity_datetime)
 
     var body = {
       "pageSize": "100",
@@ -356,39 +168,53 @@ export default class AdventureMap extends React.Component {
   }
 
   filterPhotosByTime(photos) {
-    console.log(photos.mediaItems)
+    // console.log(photos.mediaItems)
     
     // console.log(photos.mediaItems[0].mediaMetadata.creationTime)
-    // console.log(this.state.activity_datetime)
-    // console.log(this.state.activity_endtime)
+    console.log(this.state.activity_datetime)
+    console.log(this.state.activity_endtime)
 
     var filtered_photos = photos.mediaItems.filter((picture) => {
       return new Date(picture.mediaMetadata.creationTime) >= new Date(this.state.activity_datetime) &&
              new Date(picture.mediaMetadata.creationTime) <= new Date(this.state.activity_endtime)
     });
     console.log(filtered_photos)
-    this.pushLinksToState(filtered_photos)
+    this.pushDataToState(filtered_photos)
 
+    // var arr = [
+    //   {
+    //     'a': 1,
+    //     'b': 2
+    // }, {
+    //   'a': 1,
+    //   'b': 5
+    // }]
+    // console.log(arr)
+
+    // var result = arr.filter( (el) => {
+    //   return el.a > 0 &&
+    //   el.b < 5
+    // })
+    // console.log(result)
   }
 
-  pushLinksToState(photos) {
-    var links = photos.map( (p) => p.baseUrl + "=w250-h500" )
-    this.setState({photos_links: links})
-  }
+  pushDataToState(photos) {
+    var photo_data = photos.map( (p) => [p.baseUrl + "=w250-h500", p.mediaMetadata.creationTime] )
 
-  removeScroller(e) {
-    e.preventDefault()
-    this.setState({photos_links: null})
+    this.setState({photo_data: photo_data}, console.log(this.state))
   }
 
   render() {
     return (
       <>
       <div>
-        <div 
-          ref={el => this.mapContainer = el} 
-          className='mapContainer'
-        />
+        <MapBox 
+        geojson={this.state.geojson} 
+        map_style={this.state.map_style} 
+        zoom_coords={this.state.zoom_coords}
+        onActivitySelected={this.displaySelected.bind(this)} 
+        onActivityDeselected={this.removeSelected.bind(this)} 
+        ref={(mapbox)=>{this.mapbox = mapbox}}/>
 
         <div ref={el => this.navbar = el} className="navbar flex flex-col font-semibold">
         <div>
@@ -496,15 +322,18 @@ export default class AdventureMap extends React.Component {
             </div>
             <br></br>
 
+            <br></br>
+
             <p>Zoom to Displayed Activities</p>
-            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow " onClick={this.zoomIn}>Zoom</button>
+            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={this.zoomIn}>Zoom</button>
           </form>
         </div>
       </div>
       <PhotoScroller 
-      toShow={this.state.photos_links} 
-      remove={this.removeScroller.bind(this)}
-      activity_props={this.state.activity_props} 
+      data={this.state.photo_data} 
+      display_props={this.state.display_props}
+      time_coords={this.state.time_coords} 
+      activity_start={this.state.activity_datetime}        
       />
       </div>
       </>

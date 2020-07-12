@@ -57,9 +57,9 @@ class ActivitiesController < ApplicationController
 
   def detailed_activity
     p params
-    # results = Strava::Activities.get_activity_streams(current_user, params[:activity_id])
-    p current_user.authorization_state
-    s = ["1"]
+    results = Strava::Activities.get_activity_streams(current_user, params[:activity_id])
+    # p current_user.authorization_state
+    s = [results]
     render json: s
   end
 

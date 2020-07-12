@@ -73,33 +73,32 @@ export default class MapBox extends React.Component {
   }
 
   changeStyle() {
+    console.log("style change")
     this.state.map.setStyle('mapbox://styles/' + this.props.map_style)
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if(prevProps.map_style != this.props.map_style){
-      changeStyle()
+      this.changeStyle()
+    }
+    if(prevProps.geojson != this.props.geojson){
+      this.updateMap()
     }
 
-    this.updateMap()
   }
 
   componentDidMount() {
-    console.log("did mount")
+    console.log("map did mount")
     //creates map and stores a reference in state
     const map = this.newMap()
-    var hoveredStateId = null;
     this.setState({ map }, () => {
       console.log("adding event listeners")
       //load data after style
       map.on('style.load', () => {this.updateMap()})
-      // Change it back to a pointer when it leaves.
-      map.on('mouseleave', 'activities', () => {this.mouseLeave()})
       //chenge mouse from pointer on enter activity
       map.on('mouseenter', 'activities', () => {this.mouseEnter()})
-      //popup
-
-  
+      // Change it back to a pointer when it leaves.
+      map.on('mouseleave', 'activities', () => {this.mouseLeave()})
 
       map.on('click', 'activities', (e) => {this.onActivitySelected(e)})
       //test
@@ -140,35 +139,48 @@ export default class MapBox extends React.Component {
 
   onActivitySelected(e) {
     console.log("activity click")
+    console.log(this)
+    var map = this.state.map
+
+
     //object cleanup for html display
-    var props = e.features[0].properties;
-    var endtime = new Date(props['Full_Date'])
-    console.log(endtime)
-    endtime.setSeconds( endtime.getSeconds() + props['Total_Elapsed_Time'] )
+    var properties = e.features[0].properties;
+    var endtime = new Date(properties['Full_Date'])
+    console.log(properties)
+    console.log(properties['aid'])
+    endtime.setSeconds( endtime.getSeconds() + properties['Total_Elapsed_Time'] )
 
-    delete props.id
-    delete props['Total_Elapsed_Time']
-    delete props['Full_Date']
 
-    props = JSON.stringify(props)
+    this.props.onActivitySelected(e, onActivitySelectedProps)
 
-    props = props.replace(/"/g, '')
-    props = props.replace(/{/g, '')
-    props = props.replace(/}/g, '')
-    props = props.replace(/,/g, ' ')
-    props = props.replace(/:/g, ': ')
-    props = props.replace(' colon ', ':')
+    var display = JSON.parse(JSON.stringify(properties))
+
+    delete display.id
+    delete display.aid
+    delete display['Total_Elapsed_Time']
+    delete display['Full_Date']
+
+    // display = JSON.stringify(display)
+
+    // display = display.replace(/"/g, '')
+    // display = display.replace(/{/g, '')
+    // display = display.replace(/}/g, '')
+    // display = display.replace(/,/g, ' ')
+    // display = display.replace(/:/g, ': ')
+    // display = display.replace(' colon ', ':')
 
     var onActivitySelectedProps = {
-      activity_datetime: new Date(props['Full_Date']),
+      activity_datetime: new Date(properties['Full_Date']),
       activity_endtime: endtime,
-      photo_button: true,
-      activity_props: props,
+      activity_props: properties,
+      display_props: display
     }
+
+    this.props.onActivitySelected(e, onActivitySelectedProps)
 
     var popup = new mapboxgl.Popup()
     .setLngLat(e.lngLat)
-    .setHTML(props)
+    .setHTML(display)
     .addTo(this.state.map)
 
     var selectedStateId = e.features[0].id
@@ -177,19 +189,6 @@ export default class MapBox extends React.Component {
       { selected: true }
     );
     map.setFilter('activities', ['==', ['get', 'id'], e.features[0].id])
-
-    // map.on('click', () => {
-    //   console.log("map click")
-    //   console.log(this.state.photo_button)
-    //   if (this.state.photo_button == true) {
-    //     map.setFilter('activities', null)
-    //     map.setFeatureState(
-    //       { source: 'activities', id: selectedStateId },
-    //       { selected: false }
-    //     )
-    //     this.setState({photo_button: false})
-    //   }
-    // })
 
     //remove highlight
     popup.on('close', (e) => {
@@ -200,8 +199,6 @@ export default class MapBox extends React.Component {
       )
       this.onActivityDeselected(e)
     })
-
-    this.props.onActivitySelected(e, onActivitySelectedProps)
   }
 
   onActivityDeselected(e) {
@@ -218,6 +215,7 @@ export default class MapBox extends React.Component {
 
   updateMap() {
     console.log("starting updatemap")
+    console.log(this.state)
     var map = this.state.map
 
     //remove old activities
@@ -227,9 +225,9 @@ export default class MapBox extends React.Component {
     map.removeSource('activities');
     }
     
-    //update display
-    this.addActivities()
-    this.displayActivities()
+     //update display
+     this.addActivities(map, this.props.geojson)
+     this.displayActivities(map)
   }
 
   render() {

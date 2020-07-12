@@ -17,6 +17,7 @@ def to_geojson
             'Total Moving Time': Time.at(moving_time).utc.strftime("%khrs %Mmin"),
             'Activity Type': workout_type,
             'id': id,
+            'aid': aid
         },
         'geometry': {
         'type': 'LineString',
