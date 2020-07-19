@@ -5,6 +5,7 @@ import Flatpickr from "react-flatpickr";
 import 'flatpickr/dist/themes/dark.css';
 import PhotoScroller from './PhotoScroller.jsx';
 import MapBox from './MapBox.jsx';
+import PhotoView from './PhotoView.jsx';
 
 export default class AdventureMap extends React.Component {
   static propTypes = {
@@ -28,6 +29,9 @@ export default class AdventureMap extends React.Component {
       zoom_coords: this.props.zoom_coords,
       map_style: this.props.map_style,
       activity_type: "",
+      marker_coords: [],
+      large_photo: [false, ""],
+      photo_data: null,
     };
     console.log(this.props)
     console.log("constructor end")
@@ -112,20 +116,6 @@ export default class AdventureMap extends React.Component {
   getPhotos() {
     // console.log(this.state.activity_props)
 
-    var data = {
-      'activity_id': this.state.activity_props.aid
-    }
-
-    fetch("/activities/detailed_activity", {
-      method: 'POST',
-      headers:  {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then( (json) => this.setState({time_coords: json[0]}, console.log("coords set")))
 
 
     var date = new Date(this.state.activity_datetime)
@@ -167,41 +157,90 @@ export default class AdventureMap extends React.Component {
     });
   }
 
+  getDetailedActivity(filtered_photos) {
+    console.log("detailed activity")
+    var data = {
+      'activity_id': this.state.activity_props.aid
+    }
+    //this calls strava api, which has rate limit of 100 times/15min. so ony tiggering if there are photos to map
+    fetch("/activities/detailed_activity", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+
+    .then(response => response.json())
+    .then( (json) => this.setState({time_coords: json[0]}, this.pushDataToState(filtered_photos)))
+
+  }
+
   filterPhotosByTime(photos) {
-    // console.log(photos.mediaItems)
-    
-    // console.log(photos.mediaItems[0].mediaMetadata.creationTime)
-    console.log(this.state.activity_datetime)
-    console.log(this.state.activity_endtime)
+    console.log("filter")
+    console.log(photos)
 
-    var filtered_photos = photos.mediaItems.filter((picture) => {
-      return new Date(picture.mediaMetadata.creationTime) >= new Date(this.state.activity_datetime) &&
-             new Date(picture.mediaMetadata.creationTime) <= new Date(this.state.activity_endtime)
-    });
-    console.log(filtered_photos)
-    this.pushDataToState(filtered_photos)
+    var filtered_photos = null
 
-    // var arr = [
-    //   {
-    //     'a': 1,
-    //     'b': 2
-    // }, {
-    //   'a': 1,
-    //   'b': 5
-    // }]
-    // console.log(arr)
+    if (photos.mediaItems) {
+      filtered_photos = photos.mediaItems.filter((picture) => {
+        return new Date(picture.mediaMetadata.creationTime) >= new Date(this.state.activity_datetime) &&
+               new Date(picture.mediaMetadata.creationTime) <= new Date(this.state.activity_endtime)
+      });
+    }
 
-    // var result = arr.filter( (el) => {
-    //   return el.a > 0 &&
-    //   el.b < 5
-    // })
-    // console.log(result)
+    if (filtered_photos && filtered_photos.length == 0) {
+      filtered_photos = null
+    }
+
+    if (filtered_photos) {
+      this.getDetailedActivity(filtered_photos)
+    }    
   }
 
   pushDataToState(photos) {
-    var photo_data = photos.map( (p) => [p.baseUrl + "=w250-h500", p.mediaMetadata.creationTime] )
+  var photo_data = null
 
-    this.setState({photo_data: photo_data}, console.log(this.state))
+    class Photo {
+      constructor(id, url, timestamp, hovered) {
+        this.id = id;
+        this.url = url;
+        this.timestamp = timestamp;
+        this.hovered = hovered;
+      }
+
+      setCoordinates(c) {
+        this.coords = c
+      }
+
+    }
+    if (photos) {
+      photo_data = photos.map( (p) => new Photo( p.id, p.baseUrl + "=w250-h500", p.mediaMetadata.creationTime, false ) )
+      this.setState({photo_data}, console.log(this.state))
+    }
+  }
+
+  toggleMarkerOn(coords) {
+    var marker_coords = this.state.marker_coords
+    marker_coords = [...marker_coords, coords]
+    this.setState({marker_coords}, console.log("added marker"))
+  }
+
+  toggleMarkerOff() {
+    var marker_coords = []
+    this.setState({marker_coords}, console.log(this.state.marker_coords))
+  }
+
+  toggleLargePhoto(url) {
+    url = url.replace("=w250-h500", "=w5000-h5000")
+    console.log("toggle")
+    if (this.state.large_photo[0] == true) {
+      this.setState({large_photo:[false,""]})
+    }
+    if (this.state.large_photo[0] == false) {
+      this.setState({large_photo:[true, url]})
+    }
   }
 
   render() {
@@ -209,12 +248,14 @@ export default class AdventureMap extends React.Component {
       <>
       <div>
         <MapBox 
-        geojson={this.state.geojson} 
-        map_style={this.state.map_style} 
-        zoom_coords={this.state.zoom_coords}
-        onActivitySelected={this.displaySelected.bind(this)} 
-        onActivityDeselected={this.removeSelected.bind(this)} 
-        ref={(mapbox)=>{this.mapbox = mapbox}}/>
+          geojson={this.state.geojson} 
+          map_style={this.state.map_style} 
+          zoom_coords={this.state.zoom_coords}
+          onActivitySelected={this.displaySelected.bind(this)} 
+          onActivityDeselected={this.removeSelected.bind(this)}
+          marker_coords={this.state.marker_coords} 
+          ref={(mapbox)=>{this.mapbox = mapbox}}
+        />
 
         <div ref={el => this.navbar = el} className="navbar flex flex-col font-semibold">
         <div>
@@ -319,6 +360,17 @@ export default class AdventureMap extends React.Component {
               Treasure
             </label>
             <br></br>
+            <label>
+              <input
+                type="radio"
+                value="lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"
+                checked={this.state.map_style === "lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"}
+                onChange={this.updateStyle}
+              />
+              Comic
+            </label>
+            <br></br>
+
             </div>
             <br></br>
 
@@ -330,10 +382,18 @@ export default class AdventureMap extends React.Component {
         </div>
       </div>
       <PhotoScroller 
-      data={this.state.photo_data} 
-      display_props={this.state.display_props}
-      time_coords={this.state.time_coords} 
-      activity_start={this.state.activity_datetime}        
+        data={this.state.photo_data} 
+        display_props={this.state.display_props}
+        time_coords={this.state.time_coords} 
+        activity_start={this.state.activity_datetime}    
+        toggleMarkerOn={this.toggleMarkerOn.bind(this)}
+        toggleMarkerOff={this.toggleMarkerOff.bind(this)}
+        toggleLargePhoto={this.toggleLargePhoto.bind(this)}
+      />
+      < PhotoView
+        display={this.state.large_photo[0]}
+        url={this.state.large_photo[1]}
+        toggleLargePhoto={this.toggleLargePhoto.bind(this)}
       />
       </div>
       </>

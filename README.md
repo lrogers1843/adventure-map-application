@@ -82,7 +82,10 @@ had to set the following in hero webpage manually before deploy
 ASSET_HOST: siteURL.herokuapp.com
 APPLICATION_HOST: siteURL.herokuapp.com
 AUTO_MIGRATE_DB: true
-had to rub db: prepare
+had to run db: prepare
+### Redeploy
+
+
 then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
 ### css rewrite
 created app/javascript/stylesheets/components/map.scss
@@ -107,6 +110,9 @@ setup new Google Cloud Platform project called adventure-map, enabled photos API
  yarn install
  import components in app/javascript/stylesheets/application.scss
  require in postcss.config.js
+### Refactor
+created several new react elements for image display and UI, which just requires jsx file creating and reference in top of the file where the component is called. 
+
 
 
 

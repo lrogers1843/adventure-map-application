@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Image from './Image.jsx';
 export default class PhotoScroller extends React.Component {
 
   constructor(props) {
@@ -9,13 +9,11 @@ export default class PhotoScroller extends React.Component {
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.data != this.props.data) {
-      if (!this.props.data) {
-        this.setState({data: null})
-      }
+    if (prevProps.data != this.props.data && !this.props.data) {
+      this.setState({data: null})
     }
 
-    if(prevProps.time_coords != this.props.time_coords) {
+    if(prevProps.time_coords != this.props.time_coords && this.props.data) {
       this.setLocation()
     }
   }
@@ -23,10 +21,12 @@ export default class PhotoScroller extends React.Component {
   setLocation() {
     console.log("getting location")
     console.log(this.state)
-    var start = new Date(this.props.activity_start)
-    console.log(start)
-    var data = this.props.data.map( (d) => [d[0], this.getCoordFromTime(d[1])] )
-    console.log(data[0])
+    // var start = new Date(this.props.activity_start)
+    // console.log(start)
+    // var data = this.props.data.map( (d) => [d[0], this.getCoordFromTime(d[1])] )
+    var data = this.props.data
+    data.forEach( (d) => d.setCoordinates(this.getCoordFromTime(d.timestamp)))
+    // console.log(data)
     this.setState({data})
   }
 
@@ -36,12 +36,12 @@ export default class PhotoScroller extends React.Component {
     var elapsed_time = (new Date(photo_time)-start)/1000
     var times = this.props.time_coords[0]
     var coords = this.props.time_coords[1]
-    console.log(elapsed_time)
+    // console.log(elapsed_time)
     var activity_time = this.closestTime(elapsed_time, times)
     var i = times.indexOf(activity_time)
-    console.log(i)
+    // console.log(i)
     var coord = coords[i]
-    console.log(coord)
+    // console.log(coord)
     return coord
   }
 
@@ -60,17 +60,21 @@ export default class PhotoScroller extends React.Component {
     });
 }
 
-popup() {
-  console.log("pop")
-}
-
     render() {
         if (this.props.display_props) {
           var keys = Object.keys(this.props.display_props)
           return <div 
           className="photo_scroller flex flex-col items-center overflow-y-auto text-sm text-black font-semibold">
           {keys.map( (k) => <p> {k + ": " + this.props.display_props[k]}</p>)}
-          {this.state.data && this.state.data.map( (data) => <img src={data[0]} lat={data[1][0].toString()} long={data[1][1].toString()} onClick={e => this.popup(e)}/>)} 
+          {this.state.data && this.state.data.map( (d) => 
+          <Image
+            url={d.url} 
+            coords={d.coords}
+            toggleMarkerOn={this.props.toggleMarkerOn}
+            toggleMarkerOff={this.props.toggleMarkerOff}
+            toggleLargePhoto={this.props.toggleLargePhoto}      
+          />
+          )} 
           </div>
         }
         return null;

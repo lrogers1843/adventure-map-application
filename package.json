@@ -16,6 +16,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-flatpickr": "^3.10.1",
+    "react-hover": "^1.4.0",
     "react-on-rails": "11.3.0",
     "tailwindcss": "^1.4.6"
   },

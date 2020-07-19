@@ -6,7 +6,7 @@ module Strava
       p "activity streams"
       t = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "time", "key_by_type" => true}, headers: headers).parsed_response
       c = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "latlng", "key_by_type" => true}, headers: headers).parsed_response
-      p "done"
+      p t
       timestamps = t["time"]["data"]
       coords = c["latlng"]["data"]
       p timestamps.count

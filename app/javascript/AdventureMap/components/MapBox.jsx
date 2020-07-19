@@ -2,7 +2,12 @@ import React from 'react';
 import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoibHJvZ2VyczE4NDMiLCJhIjoiY2thZ3Fnejk2MGI3dzJwbWo0eXE1dHF6MyJ9.oYfkk7ZeGShmfugXoZ6Wkg';
 
+// this cannot be stored on state, causes issues with rapid mouseover from one img to another
+var marker_array = []
+
 export default class MapBox extends React.Component {
+
+
   newMap(){ 
     console.log("newmap")
   return (
@@ -84,7 +89,38 @@ export default class MapBox extends React.Component {
     if(prevProps.geojson != this.props.geojson){
       this.updateMap()
     }
+    if(prevProps.marker_coords != this.props.marker_coords){
+      console.log("new props")
+      console.log(this.props.marker_coords)
+      if (this.props.marker_coords.length == 0){
+        this.removeMarkers()
+      }
+      else {
+      this.setMarker()
+      }
+    
+    }
+  }
 
+  setMarker() {
+    var coords = this.props.marker_coords
+    coords.forEach((c) => this.markerOn(c))
+  }
+
+  markerOn(c) {
+    this.removeMarkers()
+    var marker = new mapboxgl.Marker()
+    .setLngLat([c[1], c[0]])
+    .addTo(this.state.map)
+    var markers = marker_array
+    marker_array = [...markers, marker]
+  }
+
+  removeMarkers() {
+    var markers = marker_array
+    markers.forEach((m) => {
+      m.remove()
+    })
   }
 
   componentDidMount() {
