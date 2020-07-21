@@ -14,21 +14,21 @@ class User < ApplicationRecord
       self.send(params.provider,params)
   end
 
-  before_save :extract_omniauth_data #will this re-write strava access info when google token is refreshing, and vice-versa? may need to move it up to the callback controller
+  # before_save :extract_omniauth_data #will this re-write strava access info when google token is refreshing, and vice-versa? may need to move it up to the callback controller
 
-  def extract_omniauth_data
-    p strava_data.present?
-    if (strava_data.present?)
-      # self.strava_user_token = strava_data["credentials"]["token"]
-      # self.strava_user_refresh_token = strava_data["credentials"]["refresh_token"]
-      # self.strava_user_token_expiration = strava_data["credentials"]["expires_at"]
-    end
-    if (google_oauth2_data.present?)
-      p "google extract"
-      # self.google_access_token = google_oauth2_data["credentials"]["token"]
-      # self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
-    end
-  end
+  # def extract_omniauth_data
+  #   p strava_data.present?
+  #   if (strava_data.present?)
+  #     # self.strava_user_token = strava_data["credentials"]["token"]
+  #     # self.strava_user_refresh_token = strava_data["credentials"]["refresh_token"]
+  #     # self.strava_user_token_expiration = strava_data["credentials"]["expires_at"]
+  #   end
+  #   if (google_oauth2_data.present?)
+  #     p "google extract"
+  #     # self.google_access_token = google_oauth2_data["credentials"]["token"]
+  #     # self.google_refresh_token = google_oauth2_data["credentials"]["refresh_token"]
+  #   end
+  # end
 
   def authorization_state
     s = strava_authorized

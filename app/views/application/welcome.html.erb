@@ -1,4 +1,15 @@
-<h1 class="font-bold"> Welcome to the Adventure Map</h1>
-<%= link_to 'Demo', map_path %>
-<%= link_to 'Signup', new_user_registration_path %>
-<%= link_to 'Login', new_user_session_path %>
+<style>
+.border {
+    margin: .75rem
+}
+p {
+    margin: .5rem;
+    max-width: 20rem;
+    text-align: center;
+}
+</style>
+<p class="font-bold mt-5"> Welcome to the Adventure Map</p>
+<p> This is a tool to combine your Strava activities and your Google Photos images on a map. Try out a demo or sign in below!</p>
+<%= link_to 'Demo', map_path, class: "h-auto bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow " %>
+<%= link_to 'Signup', new_user_registration_path, class: "h-auto bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow " %>
+<%= link_to 'Login', new_user_session_path, class: "h-auto bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow " %>

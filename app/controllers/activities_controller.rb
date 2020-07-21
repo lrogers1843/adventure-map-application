@@ -2,15 +2,32 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!
   skip_before_action :verify_authenticity_token, only: [:filter, :detailed_activity]
+  skip_before_action :authenticate_user!, only: [:filter, :detailed_activity]
+
+  def effective_user
+    current_user || demo_user
+  end
+
   def filter
-    p params
+    p "filter"
+    p current_user
+    p effective_user 
+
+    # #handle demo calls - this is a good way to create thread problems. generally, this isn't great to do
+    # any assignment creates side effects 
+    # current_user is a pretty big, nonsuggested one
+    # if (!effective_user) 
+    #   p "demo"
+    #   current_user = User.where(email: "luke@gmail.com").first
+    # end
+    # p effective_user 
 
     # type conversion to sync with active record
     params_start = Time.zone.parse(params[:start_date])
     params_end = Time.zone.parse(params[:end_date]) + 1.day
 
     # get initial set by date
-    activities = current_user.activities.where(start_date: params_start..params_end)
+    activities = effective_user.activities.where(start_date: params_start..params_end)
     p activities.count
 
     # unique types
@@ -25,9 +42,8 @@ class ActivitiesController < ApplicationController
     {value: type, display: type}
     }
     # add empty dropdown
-    unique_types.prepend({value: "", display: "all"})
+    unique_types.prepend({value: "", display: "All"})
     
-
     # filer by type
     if (params[:activity_type] != "")
       activities = activities.where(workout_type: params[:activity_type])
@@ -57,14 +73,14 @@ class ActivitiesController < ApplicationController
 
   def detailed_activity
     p params
-    results = Strava::Activities.get_activity_streams(current_user, params[:activity_id])
-    # p current_user.authorization_state
+    results = Strava::Activities.get_activity_streams(effective_user, params[:activity_id])
+    # p effective_user.authorization_state
     s = [results]
     render json: s
   end
 
   def index
-    @activites = current_user.activites.all
+    @activites = effective_user.activites.all
   end
 
   # GET /activities/1

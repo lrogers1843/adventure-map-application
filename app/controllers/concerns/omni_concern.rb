@@ -3,7 +3,7 @@ module OmniConcern
       def create
         auth_params = request.env["omniauth.auth"]
         provider = AuthenticationProvider.get_provider_name(auth_params.try(:provider)).first
-        authentication = provider.user_authentications.where(uid: auth_params.uid).first
+        # authentication = provider.user_authentications.where(uid: auth_params.uid).first
         # existing_user = User.where('strava_uid = ?', auth_params['uid']).try(:first)
         existing_user = current_user
         p provider.name
@@ -30,29 +30,29 @@ module OmniConcern
           redirect_to new_user_registration_url
 
         # all these other cases will never happen if we login before strava oauth
-        elsif authentication
-          create_authentication_and_sign_in(auth_params, existing_user, provider)
-        else
-          create_user_and_authentication_and_sign_in(auth_params, provider)
+      #   elsif authentication
+      #     create_authentication_and_sign_in(auth_params, existing_user, provider)
+      #   else
+      #     create_user_and_authentication_and_sign_in(auth_params, provider)
         end
       end
 
-      def sign_in_with_existing_authentication(authentication)
-        sign_in_and_redirect(:user, authentication.user)
-      end
+      # def sign_in_with_existing_authentication(authentication)
+      #   sign_in_and_redirect(:user, authentication.user)
+      # end
 
-      def create_authentication_and_sign_in(auth_params, user, provider)
-        UserAuthentication.create_from_omniauth(auth_params, user, provider)
-        sign_in_and_redirect(:user, user) 
-      end
+      # def create_authentication_and_sign_in(auth_params, user, provider)
+      #   UserAuthentication.create_from_omniauth(auth_params, user, provider)
+      #   sign_in_and_redirect(:user, user) 
+      # end
 
-      def create_user_and_authentication_and_sign_in(auth_params, provider)
-        user = User.create_from_omniauth(auth_params)
-        if user.valid?
-            create_authentication_and_sign_in(auth_params, user, provider)
-        else
-            flash[:error] = user.errors.full_messages.first
-            redirect_to new_user_registration_url
-        end
-      end
+      # def create_user_and_authentication_and_sign_in(auth_params, provider)
+      #   user = User.create_from_omniauth(auth_params)
+      #   if user.valid?
+      #       create_authentication_and_sign_in(auth_params, user, provider)
+      #   else
+      #       flash[:error] = user.errors.full_messages.first
+      #       redirect_to new_user_registration_url
+      #   end
+      # end
 end

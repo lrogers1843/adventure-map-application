@@ -2,8 +2,14 @@ class UsersController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :refresh_google_token
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
+
+  def effective_user
+    current_user || demo_user
+  end
+
   def refresh_google_token
-    user = current_user
+    user = effective_user
+    p user.google_refresh_token
     if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300) 
       p "refresh api call"
       query_params = { 
@@ -13,6 +19,7 @@ class UsersController < ApplicationController
         "grant_type" => "refresh_token"
       }
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
+      p response.parsed_response
       user.google_access_token = response.parsed_response["access_token"]
       now = Time.now
       exp = response.parsed_response["expires_in"]

@@ -6,7 +6,6 @@ module Strava
       p "activity streams"
       t = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "time", "key_by_type" => true}, headers: headers).parsed_response
       c = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "latlng", "key_by_type" => true}, headers: headers).parsed_response
-      p t
       timestamps = t["time"]["data"]
       coords = c["latlng"]["data"]
       p timestamps.count
@@ -64,32 +63,32 @@ module Strava
     end
 
     def refresh_activities
-      @user.activities.destroy_all
-      response.each do |activity|
-        params = {
-          name: activity["name"],
-          aid: activity["id"],
-          description: "nil",
-          distance: (activity["distance"].to_f/1609).round(2),
-          total_elevation_gain: activity["total_elevation_gain"],
-          moving_time: activity["moving_time"],
-          elapsed_time: activity["elapsed_time"],
-          start_date: activity["start_date_local"],
-          start_date_utc: activity["start_date"],
-          start_lat: activity["start_latlng"][0],
-          start_lng: activity["start_latlng"][1],
-          end_lat: activity["end_latlng"][0],
-          end_lng: activity["end_latlng"][1],
-          workout_type: activity["type"],
-          polymap: activity["map"]["polyline"],
-          map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]).map{ |pair|  
-            lat = pair.shift 
-            pair.push(lat)}, # switch order
-          created_at: "nil",
-          updated_at: "nil",
-        }
-        @user.activities.create(params)
-      end
+        @user.activities.destroy_all
+        response.each do |activity|
+          params = {
+            name: activity["name"],
+            aid: activity["id"],
+            description: "nil",
+            distance: (activity["distance"].to_f/1609).round(2),
+            total_elevation_gain: activity["total_elevation_gain"],
+            moving_time: activity["moving_time"],
+            elapsed_time: activity["elapsed_time"],
+            start_date: activity["start_date_local"],
+            start_date_utc: activity["start_date"],
+            start_lat: activity["start_latlng"][0],
+            start_lng: activity["start_latlng"][1],
+            end_lat: activity["end_latlng"][0],
+            end_lng: activity["end_latlng"][1],
+            workout_type: activity["type"],
+            polymap: activity["map"]["polyline"],
+            map_coords: FastPolylines.decode(activity["map"]["summary_polyline"]).map{ |pair|  
+              lat = pair.shift 
+              pair.push(lat)}, # switch order
+            created_at: "nil",
+            updated_at: "nil",
+          }
+          @user.activities.create(params)
+        end
     end
 
     def self.refresh_activities (user)

@@ -1,3 +1,13 @@
+<style>
+input {
+  	display: block
+}
+.input {
+  margin: .2rem
+}
+</style>
+
+
 <h2>Sign up</h2>
 
 <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
@@ -18,8 +28,6 @@
   </div>
 
   <div class="form-actions">
-    <%= f.button :submit, "Sign up" %>
+    <%= f.button :submit, "Sign up", class: "h-auto bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow " %>
   </div>
 <% end %>
-
-<%= render "devise/shared/links" %>

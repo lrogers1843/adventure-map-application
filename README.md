@@ -84,7 +84,7 @@ APPLICATION_HOST: siteURL.herokuapp.com
 AUTO_MIGRATE_DB: true
 had to run db: prepare
 ### Redeploy
-
+git push heroku master
 
 then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
 ### css rewrite
@@ -114,14 +114,9 @@ setup new Google Cloud Platform project called adventure-map, enabled photos API
 created several new react elements for image display and UI, which just requires jsx file creating and reference in top of the file where the component is called. 
 
 
-
-
-
-
 ### To-do
 figure out why strava is pulling n-1 activities
-css framework?
-pull data only after initial load, not just all be default
+if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key value violates unique constraint "index_users_on_email" DETAIL: Key (email)=(luke.rogers1843@gmail.com) already exists.
 
 
 ## Getting Started

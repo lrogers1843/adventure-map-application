@@ -14,8 +14,8 @@ export default class MapBox extends React.Component {
     new mapboxgl.Map({
       container: this.mapContainer,
       style: 'mapbox://styles/' + this.props.map_style,
-      center: [-80.5, 35],
-      zoom: 9
+      center: [-80.339, 34.652],
+      zoom: 6.5
     })
     )
   }
@@ -89,7 +89,7 @@ export default class MapBox extends React.Component {
     if(prevProps.geojson != this.props.geojson){
       this.updateMap()
     }
-    if(prevProps.marker_coords != this.props.marker_coords){
+    if(prevProps.marker_coords != this.props.marker_coords) {
       console.log("new props")
       console.log(this.props.marker_coords)
       if (this.props.marker_coords.length == 0){

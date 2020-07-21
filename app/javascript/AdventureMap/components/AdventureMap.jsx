@@ -22,12 +22,8 @@ export default class AdventureMap extends React.Component {
   
     this.state = { 
       start_date: this.props.start_date,
-      end_date: this.props.end_date,
-      activities: this.props.activities,
-      geojson: this.props.geojson,
-      types: this.props.types,
-      zoom_coords: this.props.zoom_coords,
-      map_style: this.props.map_style,
+      types: [{value: "", display: "All"}],
+      map_style: "mapbox/outdoors-v11",
       activity_type: "",
       marker_coords: [],
       large_photo: [false, ""],
@@ -62,6 +58,13 @@ export default class AdventureMap extends React.Component {
       console.log("fetch end")
       console.log(json);
     });
+  }
+
+  componentDidMount() {
+    console.log("initial activities")
+    //today's date
+    var end_date = new Date()
+    this.updateEnddate(end_date)
   }
 
   zoomIn = (e) => {
@@ -243,6 +246,10 @@ export default class AdventureMap extends React.Component {
     }
   }
 
+  setActivityType(activity_type) {
+    this.setState({activity_type}, this.getActivities )
+  }
+
   render() {
     return (
       <>
@@ -290,7 +297,7 @@ export default class AdventureMap extends React.Component {
               className=""
               value={this.state.activity_type}
               onChange={(e) => {
-                this.setState({activity_type: e.target.value}, this.getActivities );
+                this.setActivityType(e.target.value)
               }
               }
               >
