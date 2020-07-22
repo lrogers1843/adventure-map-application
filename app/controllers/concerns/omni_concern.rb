@@ -7,6 +7,7 @@ module OmniConcern
         # existing_user = User.where('strava_uid = ?', auth_params['uid']).try(:first)
         existing_user = current_user
         p provider.name
+        p auth_params
         # existing_user.send(:"#{provider.name}_data=", auth_params)
         if (provider.name == "google_oauth2")
          existing_user.google_oauth2_data = auth_params

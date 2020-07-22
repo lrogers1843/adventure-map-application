@@ -83,10 +83,14 @@ ASSET_HOST: siteURL.herokuapp.com
 APPLICATION_HOST: siteURL.herokuapp.com
 AUTO_MIGRATE_DB: true
 had to run db: prepare
+then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
 ### Redeploy
 git push heroku master
+heroku run rails db:prepare
+clean out old users
+if not present, AuthenticationProvider.create(name: "google_oauth2") and strava
 
-then had to move flatpickr css link into app/views/layouts/hello_world.html.erb
+
 ### css rewrite
 created app/javascript/stylesheets/components/map.scss
 for include in app/javascript/stylesheets/application.scss, then include that in app/javascript/packs/application.js
