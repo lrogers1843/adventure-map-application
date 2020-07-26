@@ -20,8 +20,8 @@ export default class MapBox extends React.Component {
     )
   }
 
-  zoomIn = (e) => {
-    var coordinates = this.props.zoom_coords;
+  zoomIn (coords) {
+    var coordinates = coords
     var bounds = coordinates.reduce(function(bounds, coord) {
       return bounds.extend(coord);
     }, 
@@ -33,16 +33,23 @@ export default class MapBox extends React.Component {
     console.log("zoom done")
   }
 
+  zoomToSelected() {
+    this.zoomIn(this.state.selected_activity_coords)
+  }
+
   addActivities() {
     console.log("addsrc")
-
-    this.state.map.addSource('activities', this.props.geojson);
+    console.log(this.props.flags)
+    this.state.map.addSource('activities', this.props.geojson)
+    this.state.map.addSource('flags', this.props.flags)
   }
 
   displayActivities(map) {
     console.log("display")
+    var zoombreak = 7
 
     map.addLayer({
+      'minzoom': zoombreak,
       'id': 'activities-light',
       'type': 'line',
       'source': 'activities',
@@ -57,6 +64,7 @@ export default class MapBox extends React.Component {
       }
     });
     map.addLayer({
+      'minzoom': zoombreak,
       'id': 'activities',
       'type': 'line',
       'source': 'activities',
@@ -75,6 +83,19 @@ export default class MapBox extends React.Component {
           ]
       }
     });
+    map.addLayer({
+      'id': 'flags',
+      'type': 'circle',
+      'source': 'flags',
+      'maxzoom': zoombreak,
+      'paint': {
+            'circle-blur': 1,
+            'circle-opacity': .75,
+            'circle-color': 'red',
+            'circle-radius': 15,
+          }
+    });
+console.log("flags up")
   }
 
   changeStyle() {
@@ -88,6 +109,9 @@ export default class MapBox extends React.Component {
     }
     if(prevProps.geojson != this.props.geojson){
       this.updateMap()
+    }
+    if(prevProps.zoom_coords != this.props.zoom_coords){
+      this.zoomIn(this.props.zoom_coords)
     }
     if(prevProps.marker_coords != this.props.marker_coords) {
       console.log("new props")
@@ -133,11 +157,14 @@ export default class MapBox extends React.Component {
       map.on('style.load', () => {this.updateMap()})
       //chenge mouse from pointer on enter activity
       map.on('mouseenter', 'activities', () => {this.mouseEnter()})
+      map.on('mouseenter', 'flags', () => {this.mouseEnter()})
       // Change it back to a pointer when it leaves.
       map.on('mouseleave', 'activities', () => {this.mouseLeave()})
-
+      map.on('mouseleave', 'flags', () => {this.mouseLeave()})
+      // click stuff
       map.on('click', 'activities', (e) => {this.onActivitySelected(e)})
-      //test
+      map.on('click', 'flags', (e) => {this.onFlagSelected(e)})
+
 
     })      
 
@@ -173,52 +200,53 @@ export default class MapBox extends React.Component {
 
   }
 
+  onFlagSelected(e) {
+    var properties = e.features[0].properties   
+    var point = JSON.parse(properties['Coordinates'])
+    this.state.map.flyTo({center: point, zoom: 9})
+  }
+
   onActivitySelected(e) {
     console.log("activity click")
     console.log(this)
     var map = this.state.map
 
-
-    //object cleanup for html display
-    var properties = e.features[0].properties;
+    // calculate endtime for photo filter
+    var properties = e.features[0].properties   
     var endtime = new Date(properties['Full_Date'])
-    console.log(properties)
-    console.log(properties['aid'])
     endtime.setSeconds( endtime.getSeconds() + properties['Total_Elapsed_Time'] )
 
+    //get activity coords for activity zoom
+    var coords = JSON.parse(properties['coords'])
+    // console.log(coords)
+    this.setState({selected_activity_coords: coords})
 
-    this.props.onActivitySelected(e, onActivitySelectedProps)
-
+    //object cleanup for html display
     var display = JSON.parse(JSON.stringify(properties))
-
     delete display.id
     delete display.aid
     delete display['Total_Elapsed_Time']
     delete display['Full_Date']
+    delete display['coords']
 
-    // display = JSON.stringify(display)
 
-    // display = display.replace(/"/g, '')
-    // display = display.replace(/{/g, '')
-    // display = display.replace(/}/g, '')
-    // display = display.replace(/,/g, ' ')
-    // display = display.replace(/:/g, ': ')
-    // display = display.replace(' colon ', ':')
-
+    //activity info for app state
     var onActivitySelectedProps = {
       activity_datetime: new Date(properties['Full_Date']),
       activity_endtime: endtime,
       activity_props: properties,
-      display_props: display
+      display_props: display,
     }
 
     this.props.onActivitySelected(e, onActivitySelectedProps)
 
+    //create popup for click tracking
     var popup = new mapboxgl.Popup()
     .setLngLat(e.lngLat)
     .setHTML(display)
     .addTo(this.state.map)
 
+    //highlight selected
     var selectedStateId = e.features[0].id
     map.setFeatureState(
       { source: 'activities', id: selectedStateId },
@@ -260,6 +288,12 @@ export default class MapBox extends React.Component {
     map.removeLayer('activities-light');
     map.removeSource('activities');
     }
+    //remove flags
+    if (map.getLayer('flags')) {
+      map.removeLayer('flags');
+      map.removeSource('flags');
+      }
+  
     
      //update display
      this.addActivities(map, this.props.geojson)

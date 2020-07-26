@@ -58,13 +58,21 @@ class ActivitiesController < ApplicationController
       }
     }
 
+    flags = {
+      'type': 'geojson',
+      'data': {
+      'type': 'FeatureCollection',
+      'features': activities.map{|a| a.to_flag }
+      }
+    }
+
     #zoom
     zoom_coords = []
     activities.each do |a|
       zoom_coords = zoom_coords + a.map_coords
     end
 
-    response = [geojson, activities, unique_types, zoom_coords]
+    response = [geojson, activities, unique_types, zoom_coords, flags]
     
     # return to app
     render json: response

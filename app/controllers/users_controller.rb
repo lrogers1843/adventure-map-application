@@ -9,6 +9,7 @@ class UsersController < ApplicationController
 
   def refresh_google_token
     user = effective_user
+    p user
     p user.google_refresh_token
     if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300) 
       p "refresh api call"
@@ -52,7 +53,7 @@ class UsersController < ApplicationController
   # POST /users
   def create
     @user = User.new(user_params)
-
+    p "creating user"
     if @user.save
       redirect_to @user, notice: 'User was successfully created.'
     else

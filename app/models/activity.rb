@@ -17,11 +17,25 @@ def to_geojson
             'Total Moving Time': Time.at(moving_time).utc.strftime("%khrs %Mmin"),
             'Activity Type': workout_type,
             'id': id,
-            'aid': aid
+            'aid': aid,
+            'coords': map_coords
         },
         'geometry': {
         'type': 'LineString',
         'coordinates': map_coords
+        }
+    }
+end
+def to_flag
+    {
+        'type': 'Feature',
+        'id': id,
+        'properties': {
+            'Coordinates': map_coords[0],
+        },
+        'geometry': {
+        'type': 'Point',
+        'coordinates': map_coords[0]
         }
     }
 end

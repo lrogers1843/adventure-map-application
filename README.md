@@ -1,5 +1,15 @@
 # Adventure map application
-# Devlopment Log
+## Devlopment Log
+
+### App Run Cheatsheet
+postgres startup: alias 'pg'
+then either, 
+1) Webpacker/Rails: 'foreman start -f Procfile.dev-server'
+or 
+2) 
+manual run proceedure, two commands in seperate consoles
+webpacker: rm -rf public/packs/* || true && bundle exec rake react_on_rails:locale && bin/webpack-dev-server --inline=false
+webserver: rails s -p 3000
 ### Rails App
 cloned remote
 suspenders .
@@ -114,46 +124,23 @@ setup new Google Cloud Platform project called adventure-map, enabled photos API
  yarn install
  import components in app/javascript/stylesheets/application.scss
  require in postcss.config.js
+ scrollbar style https://css-tricks.com/snippets/sass/custom-scrollbars-mixin/
 ### Refactor
 created several new react elements for image display and UI, which just requires jsx file creating and reference in top of the file where the component is called. 
-
+### bugfix
+if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key
+handled error after save with code in config/locales/devise.en.yml and had to add line 48 of config/locales/devise.en.yml
 
 ### To-do
 figure out why strava is pulling n-1 activities
-if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key value violates unique constraint "index_users_on_email" DETAIL: Key (email)=(luke.rogers1843@gmail.com) already exists.
+if user has no activities, TypeError (no implicit conversion of nil into String):
+2020-07-22T01:20:55.372542+00:00 app[web.1]: [0c264fc4-414b-45b3-8c87-c3a723151fe4] app/controllers/activities_controller.rb:26:in `filter'
+activity clicky is tricky
+navbar bleeds on smaller resolution.
+
+if user deauthorizes account, no path to redo after signup. plan: link that resets both auths to false, sends to the auth controller 
+q: google authefail does not break app, just returns no photos. what about strava auth fail?  
+also, even whe creating new user on my computer, and re-doing the oauth, eric's sign-in is applied automatically.
+solution: every time the user reauthorizes google, a new refresh token is issued that has to be saved on the demo user to allow continued access to photos. 
 
 
-## Getting Started
-
-After you have cloned this repo, run this setup script to set up your machine
-with the necessary dependencies to run and test this app:
-
-    % ./bin/setup
-
-It assumes you have a machine equipped with Ruby, Postgres, etc. If not, set up
-your machine with [this script].
-
-[this script]: https://github.com/thoughtbot/laptop
-
-After setting up, you can run the application using [Heroku Local]:
-
-    % heroku local
-
-[Heroku Local]: https://devcenter.heroku.com/articles/heroku-local
-
-## Guidelines
-
-Use the following guides for getting things done, programming well, and
-programming in style.
-
-* [Protocol](http://github.com/thoughtbot/guides/blob/master/protocol)
-* [Best Practices](http://github.com/thoughtbot/guides/blob/master/best-practices)
-* [Style](http://github.com/thoughtbot/guides/blob/master/style)
-
-## Deploying
-
-If you have previously run the `./bin/setup` script,
-you can deploy to staging and production with:
-
-    % ./bin/deploy staging
-    % ./bin/deploy production

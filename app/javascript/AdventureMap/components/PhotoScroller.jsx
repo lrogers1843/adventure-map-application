@@ -64,17 +64,23 @@ export default class PhotoScroller extends React.Component {
         if (this.props.display_props) {
           var keys = Object.keys(this.props.display_props)
           return <div 
-          className="photo_scroller flex flex-col items-center overflow-y-auto text-sm text-black font-semibold">
-          {keys.map( (k) => <p> {k + ": " + this.props.display_props[k]}</p>)}
-          {this.state.data && this.state.data.map( (d) => 
-          <Image
-            url={d.url} 
-            coords={d.coords}
-            toggleMarkerOn={this.props.toggleMarkerOn}
-            toggleMarkerOff={this.props.toggleMarkerOff}
-            toggleLargePhoto={this.props.toggleLargePhoto}      
-          />
-          )} 
+          className="photo_scroller flex flex-col items-center text-sm text-black font-semibold h-full theme-background"
+          >
+            <div className="text-left">
+              {keys.map( (k) => <p> {k + ": " + this.props.display_props[k]}</p>)}
+            </div>
+            <button className="bg-white hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow m-2" onClick={this.props.zoomIn}>Zoom To Activity</button>
+            <div className="overflow-auto">
+            {this.state.data && this.state.data.map( (d) => 
+            <Image
+              url={d.url} 
+              coords={d.coords}
+              toggleMarkerOn={this.props.toggleMarkerOn}
+              toggleMarkerOff={this.props.toggleMarkerOff}
+              toggleLargePhoto={this.props.toggleLargePhoto}      
+            />
+            )}
+            </div> 
           </div>
         }
         return null;

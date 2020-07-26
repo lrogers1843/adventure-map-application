@@ -6,6 +6,7 @@ import 'flatpickr/dist/themes/dark.css';
 import PhotoScroller from './PhotoScroller.jsx';
 import MapBox from './MapBox.jsx';
 import PhotoView from './PhotoView.jsx';
+import Instructions from './Instructions.jsx';
 
 export default class AdventureMap extends React.Component {
   static propTypes = {
@@ -27,6 +28,7 @@ export default class AdventureMap extends React.Component {
       activity_type: "",
       marker_coords: [],
       large_photo: [false, ""],
+      instructions: true,
       photo_data: null,
     };
     console.log(this.props)
@@ -54,9 +56,10 @@ export default class AdventureMap extends React.Component {
         geojson: json[0], 
         types: json[2],
         zoom_coords: json[3],
-      })
+        flags: json[4]
+      }, console.log(json))
       console.log("fetch end")
-      console.log(json);
+     
     });
   }
 
@@ -70,7 +73,7 @@ export default class AdventureMap extends React.Component {
   zoomIn = (e) => {
     console.log("zoom")
     e.preventDefault()
-    this.mapbox.zoomIn(e)
+    this.mapbox.zoomIn(this.state.zoom_coords)
   }
   
   updateStartdate = (start_date) => {
@@ -246,148 +249,185 @@ export default class AdventureMap extends React.Component {
     }
   }
 
+  toggleInstructions() {
+    if (this.state.instructions == true) {
+      this.setState({instructions: false})
+    }
+    if (this.state.instructions == false) {
+      this.setState({instructions: true})
+    }
+  }
+
   setActivityType(activity_type) {
     this.setState({activity_type}, this.getActivities )
+  }
+
+  zoomToSelected() {
+    this.mapbox.zoomToSelected()
   }
 
   render() {
     return (
       <>
       <div>
+        <Instructions
+        display={this.state.instructions}
+        toggleInstructions={this.toggleInstructions.bind(this)}
+        />
         <MapBox 
-          geojson={this.state.geojson} 
+          geojson={this.state.geojson}
+          flags={this.state.flags}
           map_style={this.state.map_style} 
           zoom_coords={this.state.zoom_coords}
           onActivitySelected={this.displaySelected.bind(this)} 
           onActivityDeselected={this.removeSelected.bind(this)}
-          marker_coords={this.state.marker_coords} 
+          marker_coords={this.state.marker_coords}
+          time_coords={this.state.time_coords}  
           ref={(mapbox)=>{this.mapbox = mapbox}}
         />
 
-        <div ref={el => this.navbar = el} className="navbar flex flex-col font-semibold">
-        <div>
-          <form className="flex flex-col items-left">
-            Start Date
-            <Flatpickr
-            className=""
-            value={this.state.start_date}
-              options={{
-                dateFormat:"n/j/Y",
-              }}
-              onChange={(e) => {
-                this.updateStartdate(e[0])
-              }}
-            />
-            <br></br>
-            <p>End Date</p>
-            <Flatpickr
-            className=""
-            value={this.state.end_date} 
-              options={{
-                dateFormat:"n/j/Y",
-              }}
-              onChange={(e) => {
-                this.updateEnddate(e[0])
-              }}
-            />
-            <br></br>
-            <p>Activity Type</p>
-            <div>
-              <select 
-              className=""
-              value={this.state.activity_type}
-              onChange={(e) => {
-                this.setActivityType(e.target.value)
-              }
-              }
-              >
-                {this.state.types.map((type) => <option key={type.value} value={type.value}>{type.display}</option>)}
-              </select>
-            </div>
-            <br></br>
-            <div>
-            <p>Map Style</p>
-            <label>
-              <input
-                type="radio"
-                value="mapbox/outdoors-v11"
-                checked={this.state.map_style === "mapbox/outdoors-v11"}
-                onChange={this.updateStyle}
+        <div ref={el => this.navbar = el} className="navbar theme-background">
+            <form className="flex flex-col items-center text-s font-semibold justify-between h-full w-full">
+              <div className="text-center">
+              <p>Start Date</p>
+              <Flatpickr
+              className="w-full"
+              value={this.state.start_date}
+                options={{
+                  dateFormat:"n/j/Y",
+                }}
+                onChange={(e) => {
+                  this.updateStartdate(e[0])
+                }}
               />
-              Outdoors
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="mapbox/streets-v11"
-                checked={this.state.map_style === "mapbox/streets-v11"}
-                onChange={this.updateStyle}
+              </div>
+              <div className="text-center">
+              <p>End Date</p>
+              <Flatpickr
+              className="w-full"
+              value={this.state.end_date} 
+                options={{
+                  dateFormat:"n/j/Y",
+                }}
+                onChange={(e) => {
+                  this.updateEnddate(e[0])
+                }}
               />
-              Streets
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="mapbox/satellite-v9"
-                checked={this.state.map_style === "mapbox/satellite-v9"}
-                onChange={this.updateStyle}
-              />
-              Satellite
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="mapbox/dark-v10"
-                checked={this.state.map_style === "mapbox/dark-v10"}
-                onChange={this.updateStyle}
-              />
-              Dark
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"
-                checked={this.state.map_style === "lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"}
-                onChange={this.updateStyle}
-              />
-              Pencil
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="lrogers1843/ckby3o0b81vlg1io6gtci8zx6"
-                checked={this.state.map_style === "lrogers1843/ckby3o0b81vlg1io6gtci8zx6"}
-                onChange={this.updateStyle}
-              />
-              Treasure
-            </label>
-            <br></br>
-            <label>
-              <input
-                type="radio"
-                value="lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"
-                checked={this.state.map_style === "lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"}
-                onChange={this.updateStyle}
-              />
-              Comic
-            </label>
-            <br></br>
+              </div>
+              
+              <div className="text-left w-full">
+                <p className="text-center">Activity Type</p>
+                {/* <select 
+                className="w-full"
+                value={this.state.activity_type}
+                onChange={(e) => {
+                  this.setActivityType(e.target.value)
+                }
+                }
+                >
+                  {this.state.types.map((type) => 
+                  <option key={type.value} value={type.value}>{type.display}</option>)}
+                </select> */}
 
-            </div>
-            <br></br>
+                <div className="text-left font-normal">
+                  {this.state.types.map((type) =>
+                  <>
+                  <label>
+                    <input
+                      type="radio"
+                      value={type.value}
+                      checked={this.state.activity_type === type.value}
+                      onChange={(e) => this.setActivityType(e.target.value)}
+                    />
+                    {type.display}
+                  </label>
+                  <br></br>
+                  </>)}
+                </div>
+              </div>
 
-            <br></br>
+              <div className="text-left w-full">
+              <p className="text-center">Map Style</p>
 
-            <p>Zoom to Displayed Activities</p>
-            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={this.zoomIn}>Zoom</button>
-          </form>
+                <div className="text-left font-normal">
+                <label>
+                  <input
+                    type="radio"
+                    value="mapbox/outdoors-v11"
+                    checked={this.state.map_style === "mapbox/outdoors-v11"}
+                    onChange={this.updateStyle}
+                  />
+                  Outdoors
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="mapbox/streets-v11"
+                    checked={this.state.map_style === "mapbox/streets-v11"}
+                    onChange={this.updateStyle}
+                  />
+                  Streets
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="mapbox/satellite-v9"
+                    checked={this.state.map_style === "mapbox/satellite-v9"}
+                    onChange={this.updateStyle}
+                  />
+                  Satellite
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="mapbox/dark-v10"
+                    checked={this.state.map_style === "mapbox/dark-v10"}
+                    onChange={this.updateStyle}
+                  />
+                  Dark
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"
+                    checked={this.state.map_style === "lrogers1843/ckbk7v2o50i1a1imy25jyqnzf"}
+                    onChange={this.updateStyle}
+                  />
+                  Pencil
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="lrogers1843/ckby3o0b81vlg1io6gtci8zx6"
+                    checked={this.state.map_style === "lrogers1843/ckby3o0b81vlg1io6gtci8zx6"}
+                    onChange={this.updateStyle}
+                  />
+                  Treasure
+                </label>
+                <br></br>
+                <label>
+                  <input
+                    type="radio"
+                    value="lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"
+                    checked={this.state.map_style === "lrogers1843/ckcpcaxcl0bk11kobtsx67g9n"}
+                    onChange={this.updateStyle}
+                  />
+                  Comic
+                </label>
+                </div>
+              </div>
+              <div className="text-center">
+              <button className="outline-none bg-white hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" 
+              onClick={this.zoomIn}>Zoom To All</button>
+              <button className="invisible font-semibold py-2 px-4 " onClick={e => e.preventDefault}>Dummy Spacer</button>
+              </div>
+            </form>
         </div>
-      </div>
       <PhotoScroller 
         data={this.state.photo_data} 
         display_props={this.state.display_props}
@@ -396,6 +436,7 @@ export default class AdventureMap extends React.Component {
         toggleMarkerOn={this.toggleMarkerOn.bind(this)}
         toggleMarkerOff={this.toggleMarkerOff.bind(this)}
         toggleLargePhoto={this.toggleLargePhoto.bind(this)}
+        zoomIn={this.zoomToSelected.bind(this)}
       />
       < PhotoView
         display={this.state.large_photo[0]}
