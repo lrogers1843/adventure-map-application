@@ -100,6 +100,38 @@ export default class AdventureMap extends React.Component {
     this.setState({display_props: null, photo_data: null})
   }
 
+  googleReAuth() {
+    fetch("/users/google_reauth", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+    })
+    .then(response => response.json())
+    .then(json => {
+      alert(json['message'])
+      window.location = json['redirect_url']      
+
+    })
+  }
+
+  stravaReAuth() {
+    fetch("/users/strava_reauth", {
+      method: 'POST',
+      headers:  {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+    })
+    .then(response => response.json())
+    .then(json => {
+      alert(json['message'])
+      window.location = json['redirect_url']      
+
+    })
+  }
+
   photosCall = (e) => {
     console.log("api")
 
@@ -111,19 +143,21 @@ export default class AdventureMap extends React.Component {
         "Accept": "application/json"
       },
     })
-    .then(response => response.json())
+    .then(response => {
+      var json = response.json()
+      console.log(!response.ok)
+      if (!response.ok) { this.googleReAuth() }
+      else { return json }
+    })
     .then( (json) => {
       this.setState({
         google_token: json[0]
-      }, this.getPhotos)
+      }, this.getPhotos)   
     })
   }
 
   getPhotos() {
     // console.log(this.state.activity_props)
-
-
-
     var date = new Date(this.state.activity_datetime)
     // console.log(this.state.activity_datetime)
 
@@ -157,7 +191,12 @@ export default class AdventureMap extends React.Component {
       },
       body: JSON.stringify(body)
     })
-    .then(response => response.json())
+    .then(response => {
+      var json = response.json()
+      console.log(!response.ok)
+      if (!response.ok) { this.googleReAuth() }
+      else { return json }
+    })
     .then( (json) => { 
       this.filterPhotosByTime(json)
     });
@@ -178,7 +217,11 @@ export default class AdventureMap extends React.Component {
       body: JSON.stringify(data)
     })
 
-    .then(response => response.json())
+    .then(response => {
+      var json = response.json()
+      if (!response.ok) { this.stravaReAuth() }
+      else { return json }
+    })
     .then( (json) => this.setState({time_coords: json[0]}, this.pushDataToState(filtered_photos)))
 
   }
@@ -286,7 +329,7 @@ export default class AdventureMap extends React.Component {
           ref={(mapbox)=>{this.mapbox = mapbox}}
         />
 
-        <div ref={el => this.navbar = el} className="navbar theme-background">
+        <div ref={el => this.navbar = el} className="navbar theme-background ">
             <form className="flex flex-col items-center text-s font-semibold justify-between h-full w-full">
               <div className="text-center">
               <p>Start Date</p>
@@ -425,6 +468,9 @@ export default class AdventureMap extends React.Component {
               <button className="outline-none bg-white hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" 
               onClick={this.zoomIn}>Zoom To All</button>
               <button className="invisible font-semibold py-2 px-4 " onClick={e => e.preventDefault}>Dummy Spacer</button>
+              {/* can't create a link with post/delet methods, those are always get unless treated specially */}
+              {this.props.demo && <a rel="nofollow" href="/">Home</a>}
+              {!this.props.demo && <a rel="nofollow" href="/users/sign_out" data-method="delete">Sign Out</a>}
               </div>
             </form>
         </div>

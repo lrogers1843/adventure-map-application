@@ -13,15 +13,6 @@ class ActivitiesController < ApplicationController
     p current_user
     p effective_user 
 
-    # #handle demo calls - this is a good way to create thread problems. generally, this isn't great to do
-    # any assignment creates side effects 
-    # current_user is a pretty big, nonsuggested one
-    # if (!effective_user) 
-    #   p "demo"
-    #   current_user = User.where(email: "luke@gmail.com").first
-    # end
-    # p effective_user 
-
     # type conversion to sync with active record
     params_start = Time.zone.parse(params[:start_date])
     params_end = Time.zone.parse(params[:end_date]) + 1.day
@@ -81,6 +72,10 @@ class ActivitiesController < ApplicationController
 
   def detailed_activity
     p params
+    if (Strava::Activities.check_auth(effective_user) == false)
+      redirect_to after_signup_path(:strava), notice: 'Your Strava authentication has expired!'
+      render json: [], status: 400 and return
+    end
     results = Strava::Activities.get_activity_streams(effective_user, params[:activity_id])
     # p effective_user.authorization_state
     s = [results]

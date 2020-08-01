@@ -43,7 +43,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     set_flash_message! :error, :duplicate
     # binding.pry
     render action: :new
-
   end
 
   # GET /resource/edit

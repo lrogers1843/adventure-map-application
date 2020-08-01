@@ -6,6 +6,7 @@ module Strava
       p "activity streams"
       t = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "time", "key_by_type" => true}, headers: headers).parsed_response
       c = HTTParty.get("https://www.strava.com/api/v3/activities/#{id}/streams", query: {"keys" => "latlng", "key_by_type" => true}, headers: headers).parsed_response
+      p t
       timestamps = t["time"]["data"]
       coords = c["latlng"]["data"]
       p timestamps.count
@@ -50,11 +51,12 @@ module Strava
         "refresh_token" => @user.strava_user_refresh_token
       }
       if @user.strava_user_token_expiration < Time.now.to_i + 300
-        response = HTTParty.post("https://www.strava.com/oauth/token", query: query_params)
+        response = HTTParty.get("https://www.strava.com/oauth/token", query: query_params)
         @user.strava_user_token = response.parsed_response["access_token"]
         @user.strava_user_token_expiration = response.parsed_response["expires_at"]
         @user.strava_user_refresh_token = response.parsed_response["refresh_token"]
       end
+      p "no call"
       @user.strava_user_token
     end 
 
@@ -91,16 +93,37 @@ module Strava
         end
     end
 
+    def check_auth
+      response = HTTParty.get("https://www.strava.com/api/v3/athlete", headers: headers)
+      p "auth check"
+      p response.parsed_response
+      c = response.code
+      p c
+      if (c != 200)
+        return false
+      end
+    end
+
     def self.refresh_activities (user)
-      new(user).refresh_activities
+      u = new(user)
+      # u.check_auth
+      u.refresh_activities
     end
 
     def self.list_activities (user)
-      new(user).list_activities
+      u = new(user)
+      # u.check_auth
+      u.list_activities
     end
 
     def self.get_activity_streams (user, id)
-      new(user).get_activity_streams(id)
+      u = new(user)
+      # u.check_auth
+      u.get_activity_streams(id)
+    end
+
+    def self.check_auth (user)
+      new(user).check_auth
     end
 
   end

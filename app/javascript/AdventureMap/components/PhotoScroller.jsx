@@ -66,8 +66,8 @@ export default class PhotoScroller extends React.Component {
           return <div 
           className="photo_scroller flex flex-col items-center text-sm text-black font-semibold h-full theme-background"
           >
-            <div className="text-left">
-              {keys.map( (k) => <p> {k + ": " + this.props.display_props[k]}</p>)}
+            <div className="text-left activity-summary">
+              {keys.map( (k) => <div><><p> {k + ": "} </p> <p>{this.props.display_props[k]}</p></></div>)}
             </div>
             <button className="bg-white hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow m-2" onClick={this.props.zoomIn}>Zoom To Activity</button>
             <div className="overflow-auto">

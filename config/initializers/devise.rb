@@ -260,7 +260,7 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   config.omniauth :strava, Rails.application.credentials.strava_client_id, Rails.application.credentials.strava_client_secret, scope: 'read,activity:read', token_params: { parse: :json }
-  config.omniauth :google_oauth2, Rails.application.credentials.google_client_id, Rails.application.credentials.google_client_secret, scope: 'userinfo.email, userinfo.profile, photoslibrary.readonly', access_type: 'offline', token_params: { parse: :json }
+  config.omniauth :google_oauth2, Rails.application.credentials.google_client_id, Rails.application.credentials.google_client_secret, scope: 'userinfo.email, userinfo.profile, photoslibrary.readonly', access_type: 'offline', token_params: { parse: :json }, skip_jwt: true
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
