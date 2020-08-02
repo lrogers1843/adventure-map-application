@@ -64,7 +64,7 @@ export default class PhotoScroller extends React.Component {
         if (this.props.display_props) {
           var keys = Object.keys(this.props.display_props)
           return <div 
-          className="photo_scroller flex flex-col items-center text-sm text-black font-semibold h-full theme-background"
+          className="photo_scroller flex flex-col items-center text-sm text-black font-semibold theme-background"
           >
             <div className="text-left activity-summary">
               {keys.map( (k) => <div><><p> {k + ": "} </p> <p>{this.props.display_props[k]}</p></></div>)}

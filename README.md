@@ -100,7 +100,6 @@ heroku run rails db:prepare
 clean out old users
 if not present, AuthenticationProvider.create(name: "google_oauth2") and strava
 
-
 ### css rewrite
 created app/javascript/stylesheets/components/map.scss
 for include in app/javascript/stylesheets/application.scss, then include that in app/javascript/packs/application.js
@@ -131,6 +130,8 @@ created several new react elements for image display and UI, which just requires
 if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key
 handled error after save with code in config/locales/devise.en.yml and had to add line 48 of config/locales/devise.en.yml
 
+
+
 ### To-do
 figure out why strava is pulling n-1 activities
 if user has no activities, TypeError (no implicit conversion of nil into String):
@@ -139,7 +140,7 @@ activity clicky is tricky
 navbar bleeds on smaller resolution.
 
 if user deauthorizes account, no path to redo after signup. plan: link that resets both auths to false, sends to the auth controller 
-q: google authefail does not break app, just returns no photos. what about strava auth fail?  
+q: google authfail does not break app, just returns no photos. what about strava auth fail?  
 also, even whe creating new user on my computer, and re-doing the oauth, eric's sign-in is applied automatically.
 solution: every time the user reauthorizes google, a new refresh token is issued that has to be saved on the demo user to allow continued access to photos. 
 

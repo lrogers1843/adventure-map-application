@@ -22,23 +22,15 @@ class UsersController < ApplicationController
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
       p response.code
       p response.parsed_response
-      #if code is not 200, handle error (THIS NOW HANDLED BY google_reauth below)
-      # if (response.code != 200) 
-      #   p "err cuaght"
-      #   # redirect_to after_signup_path(:google), alert: 'There is a issue with your google authentication, please authenticate again'
-      #   render json: {message: "There is a issue with your google authentication, please authenticate again", redirect_url: after_signup_path(:google)}, status: response.code
-      # else
-        #this should go in success block, like the opposite of rescue
-        p "success"
-        user.google_access_token = response.parsed_response["access_token"]
-        now = Time.now
-        exp = response.parsed_response["expires_in"]
-        e = now - exp.seconds
-        user.google_access_token_expiration = e
-        user.save
-        token = [user.google_access_token]
-        render json: token
-      # end
+      p "success"
+      user.google_access_token = response.parsed_response["access_token"]
+      now = Time.now
+      exp = response.parsed_response["expires_in"]
+      e = now - exp.seconds
+      user.google_access_token_expiration = e
+      user.save
+      token = [user.google_access_token]
+      render json: token
     else 
       p "no refresh"
       token = [user.google_access_token]

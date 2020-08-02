@@ -69,6 +69,7 @@
 	border: none;
 	padding: 0% 1%;
 	width: 18%;
+	max-height: 100%;
 }
 
 .mapboxgl-map {
@@ -113,6 +114,8 @@ button:active {
 	  right: auto;
 	  width: auto;
 	  max-width: 50%;
+	  height: 100%;
+	  
 	}
 	.activity-summary {
 		align-self: flex-start;
