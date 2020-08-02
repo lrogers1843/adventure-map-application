@@ -100,6 +100,7 @@ module Strava
       c = response.code
       p c
       if (c != 200)
+        p "false"
         return false
       end
     end
