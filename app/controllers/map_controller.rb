@@ -28,7 +28,8 @@ class MapController < ApplicationController
     if (Strava::Activities.check_auth(effective_user) == false)
       redirect_to after_signup_path(:strava), notice: 'Your Strava authentication has expired!' and return
     end
-    if (user_signed_in? && now > current_user.activity_expiration)
+    # Strava::Activities.refresh_activities(current_user)
+    if (now > current_user.activity_expiration)
       Strava::Activities.refresh_activities(current_user)
       current_user.activity_expiration = now + 7200 
       current_user.save
