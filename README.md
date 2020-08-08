@@ -133,7 +133,13 @@ app/javascript/AdventureMap/components/AdventureMap.jsx line197
 app/javascript/AdventureMap/components/AdventureMap.jsx line222
 app/controllers/activities_controller.rb line 75
 
+### single social account with multi users
 any refresh token save need to apply to both accounts that are authorized, otherwise the next one will be offering the wrong (expired) refresh anytime the other has expired and already updated. 
+OmniAuth and multi-users sharing a strava account: the best user experience would be a join table where it finds that for users that match and they share
+social accounts is a good table, but would join to instead of belong to user, then a third table that is the join table like this
+so strava stuff that is saved on user (and google) should be in the social accounts table where multiple users can find and edit
+major code cleanup would be the omni concerns file, tables, models, anywhere that they are saved/updated
+look out for: make sure a user only has one of these accounts (can be multi-social, but don't allow strava duplicates)
 
 
 ### bugfix
@@ -148,10 +154,5 @@ if user has no activities, TypeError (no implicit conversion of nil into String)
 2020-07-22T01:20:55.372542+00:00 app[web.1]: [0c264fc4-414b-45b3-8c87-c3a723151fe4] app/controllers/activities_controller.rb:26:in `filter'
 activity clicky is tricky
 navbar bleeds on smaller resolution.
-
-if user deauthorizes account, no path to redo after signup. plan: link that resets both auths to false, sends to the auth controller 
-q: google authfail does not break app, just returns no photos. what about strava auth fail?  
-also, even whe creating new user on my computer, and re-doing the oauth, eric's sign-in is applied automatically.
-solution: every time the user reauthorizes google, a new refresh token is issued that has to be saved on the demo user to allow continued access to photos. 
 
 
