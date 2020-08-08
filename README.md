@@ -126,6 +126,16 @@ setup new Google Cloud Platform project called adventure-map, enabled photos API
  scrollbar style https://css-tricks.com/snippets/sass/custom-scrollbars-mixin/
 ### Refactor
 created several new react elements for image display and UI, which just requires jsx file creating and reference in top of the file where the component is called. 
+### OAuth checks
+app/controllers/map_controller.rb line28
+app/javascript/AdventureMap/components/AdventureMap.jsx line146
+app/javascript/AdventureMap/components/AdventureMap.jsx line197
+app/javascript/AdventureMap/components/AdventureMap.jsx line222
+app/controllers/activities_controller.rb line 75
+
+any refresh token save need to apply to both accounts that are authorized, otherwise the next one will be offering the wrong (expired) refresh anytime the other has expired and already updated. 
+
+
 ### bugfix
 if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key
 handled error after save with code in config/locales/devise.en.yml and had to add line 48 of config/locales/devise.en.yml

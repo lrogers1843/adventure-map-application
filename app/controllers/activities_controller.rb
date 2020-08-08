@@ -77,7 +77,6 @@ class ActivitiesController < ApplicationController
       render json: [], status: 400 and return
     end
     results = Strava::Activities.get_activity_streams(effective_user, params[:activity_id])
-    # p effective_user.authorization_state
     s = [results]
     render json: s
   end

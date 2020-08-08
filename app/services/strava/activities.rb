@@ -43,7 +43,7 @@ module Strava
     end
 
     def user_access_token
-      p "token refresh"
+      p "token check"
       query_params = { 
         "client_id" => Rails.application.credentials.strava_client_id,
         "client_secret" => Rails.application.credentials.strava_client_secret,
@@ -51,13 +51,21 @@ module Strava
         "refresh_token" => @user.strava_user_refresh_token
       }
       if @user.strava_user_token_expiration < Time.now.to_i + 300
-        response = HTTParty.get("https://www.strava.com/oauth/token", query: query_params)
-        @user.strava_user_token = response.parsed_response["access_token"]
-        @user.strava_user_token_expiration = response.parsed_response["expires_at"]
-        @user.strava_user_refresh_token = response.parsed_response["refresh_token"]
+        all_users = User.where(strava_uid: @user.strava_uid)
+        p "token refresh"
+        p query_params
+        response = HTTParty.post("https://www.strava.com/oauth/token", query: query_params)
+        p response.parsed_response
+        all_users.to_a.each do |u|
+          p "updating #{u.email}"
+          u.strava_user_token = response.parsed_response["access_token"]
+          u.strava_user_token_expiration = response.parsed_response["expires_at"]
+          u.strava_user_refresh_token = response.parsed_response["refresh_token"]
+          u.save
+        end
       end
-      p "no call"
-      @user.strava_user_token
+      p @user.strava_user_token
+      return @user.strava_user_token
     end 
 
     def list_activities

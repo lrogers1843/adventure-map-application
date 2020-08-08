@@ -20,20 +20,21 @@ class MapController < ApplicationController
   # end
 
   def index
-    p params
     p effective_user 
     p effective_user.activity_expiration
     now = Time.zone.now
     p now
+    
     if (Strava::Activities.check_auth(effective_user) == false)
       redirect_to after_signup_path(:strava), notice: 'Your Strava authentication has expired!' and return
     end
-    # Strava::Activities.refresh_activities(current_user)
+
     if (now > effective_user.activity_expiration)
       Strava::Activities.refresh_activities(effective_user)
       effective_user.activity_expiration = now + 7200 
       effective_user.save
     end
+
     start_date = effective_user.activities.minimum("start_date")
     @map_props = { start_date: start_date, demo: !user_signed_in? }
 

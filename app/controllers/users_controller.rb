@@ -9,8 +9,7 @@ class UsersController < ApplicationController
 
   def refresh_google_token
     user = effective_user
-    p user
-    p user.google_refresh_token
+
     if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300) 
       p "refresh api call"
       query_params = { 
@@ -20,15 +19,19 @@ class UsersController < ApplicationController
         "grant_type" => "refresh_token"
       }
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
-      p response.code
-      p response.parsed_response
-      p "success"
-      user.google_access_token = response.parsed_response["access_token"]
+
       now = Time.now
       exp = response.parsed_response["expires_in"]
       e = now - exp.seconds
-      user.google_access_token_expiration = e
-      user.save
+
+      all_users = User.where(strava_uid: @user.strava_uid) || user
+      all_users.to_a.each do |u|
+        p "googley"
+        u.google_access_token_expiration = e
+        u.google_access_token = response.parsed_response["access_token"]
+        u.save  
+      end
+
       token = [user.google_access_token]
       render json: token
     else 
@@ -41,11 +44,11 @@ class UsersController < ApplicationController
 
   #reauth
   def google_reauth
-    render json: {message: "There is a issue with your google authentication, please authenticate again", redirect_url: after_signup_path(:google)}
+    render json: {message: "There is an issue with your google authentication, please authenticate again", redirect_url: after_signup_path(:google)}
   end
 
   def strava_reauth
-    render json: {message: "There is a issue with your Strava authentication, please authenticate again", redirect_url: after_signup_path(:strava)}
+    render json: {message: "There is an issue with your Strava authentication, please authenticate again", redirect_url: after_signup_path(:strava)}
   end
 
 
