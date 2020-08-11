@@ -132,7 +132,6 @@ app/javascript/AdventureMap/components/AdventureMap.jsx line146
 app/javascript/AdventureMap/components/AdventureMap.jsx line197
 app/javascript/AdventureMap/components/AdventureMap.jsx line222
 app/controllers/activities_controller.rb line 75
-
 ### single social account with multi users
 any refresh token save need to apply to both accounts that are authorized, otherwise the next one will be offering the wrong (expired) refresh anytime the other has expired and already updated. 
 OmniAuth and multi-users sharing a strava account: the best user experience would be a join table where it finds that for users that match and they share
@@ -141,18 +140,14 @@ so strava stuff that is saved on user (and google) should be in the social accou
 major code cleanup would be the omni concerns file, tables, models, anywhere that they are saved/updated
 look out for: make sure a user only has one of these accounts (can be multi-social, but don't allow strava duplicates)
 
-
 ### bugfix
 if sign up as existing user, PG::UniqueViolation: ERROR: duplicate key
 handled error after save with code in config/locales/devise.en.yml and had to add line 48 of config/locales/devise.en.yml
 
-
-
 ### To-do
-figure out why strava is pulling n-1 activities
+figure out why strava is pulling n-1 activities?
 if user has no activities, TypeError (no implicit conversion of nil into String):
 2020-07-22T01:20:55.372542+00:00 app[web.1]: [0c264fc4-414b-45b3-8c87-c3a723151fe4] app/controllers/activities_controller.rb:26:in `filter'
-activity clicky is tricky
-navbar bleeds on smaller resolution.
-
-
+get more than 100 photos per photo call
+google: refresh token is nil even after oauth re-do? this is why it needs re-auth every few hours, bc access refresh not working. why is the omni-concern not providing a refresh token to model?
+strava access not returning the new access token, retry with new line 67 in activities.rb

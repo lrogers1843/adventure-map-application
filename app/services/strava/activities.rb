@@ -62,7 +62,9 @@ module Strava
           u.strava_user_token_expiration = response.parsed_response["expires_at"]
           u.strava_user_refresh_token = response.parsed_response["refresh_token"]
           u.save
+          u.strava_user_token 
         end
+        @user = User.where(email: @user.email)
       end
       p @user.strava_user_token
       return @user.strava_user_token
