@@ -64,7 +64,7 @@ module Strava
           u.save
           u.strava_user_token 
         end
-        @user = User.where(email: @user.email)
+        @user = User.where(email: @user.email).first
       end
       p @user.strava_user_token
       return @user.strava_user_token
