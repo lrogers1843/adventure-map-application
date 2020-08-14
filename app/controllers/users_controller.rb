@@ -35,7 +35,6 @@ class UsersController < ApplicationController
     end
       token = [user.google_access_token]
       render json: token
-    end
     
   end
 
