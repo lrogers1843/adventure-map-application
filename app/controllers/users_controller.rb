@@ -24,7 +24,7 @@ class UsersController < ApplicationController
       exp = response.parsed_response["expires_in"]
       e = now - exp.seconds
 
-      all_users = User.where(strava_uid: @user.strava_uid) || user
+      all_users = User.where(strava_uid: user.strava_uid) || user
       all_users.to_a.each do |u|
         p "googley"
         u.google_access_token_expiration = e
@@ -35,7 +35,6 @@ class UsersController < ApplicationController
     end
       token = [user.google_access_token]
       render json: token
-    
   end
 
   #reauth
