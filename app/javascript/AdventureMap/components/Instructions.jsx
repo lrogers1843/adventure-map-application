@@ -23,10 +23,10 @@ export default class Instructions extends React.Component {
                     <li>The menu on the left allows you to filter your activities by date and type</li>
                     <li>Don't forget to try out the map styles!</li>
                     <li>To learn more about an activity, just click the line on the map</li>
-                    <li>Your activity information will then pop up, including any google photos taken during the activity</li>
+                    <li>Your activity information will then pop up, including any google photos taken during the activity (give those a few extra seconds to appear)</li>
                     <li>Hover over a photo to see its location on the map</li>
                     <li>Click the photo to make it larger</li>
-                    <li>The "AutoZoom" button will expand (or shrink) the map to fit all the filtered activities</li>
+                    <li>The "Zoom to All" button will expand (or shrink) the map to fit all the filtered activities</li>
                     </ul>
                 </div>
             </div>

@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   def refresh_google_token
     user = effective_user
 
-    if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300000000000) 
+    if (user.google_access_token_expiration.nil? || user.google_access_token_expiration < Time.now + 300) 
       p "refresh api call"
       query_params = { 
         "client_id" => Rails.application.credentials.google_client_id,

@@ -99,7 +99,8 @@ git push heroku master
 heroku run rails db:prepare
 clean out old users
 if not present, AuthenticationProvider.create(name: "google_oauth2") and strava
-
+### Heroku Logs in terminal
+heroku logs --tail
 ### css rewrite
 created app/javascript/stylesheets/components/map.scss
 for include in app/javascript/stylesheets/application.scss, then include that in app/javascript/packs/application.js
