@@ -19,7 +19,7 @@ class UsersController < ApplicationController
         "grant_type" => "refresh_token"
       }
       response = HTTParty.post("https://oauth2.googleapis.com/token", query: query_params)
-
+      p response.parsed_response
       now = Time.now
       exp = response.parsed_response["expires_in"]
       e = now - exp.seconds
