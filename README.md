@@ -151,3 +151,54 @@ if user has no activities, TypeError (no implicit conversion of nil into String)
 get more than 100 photos per photo call
 google: refresh token is nil even after oauth re-do? this is why it needs re-auth every few hours, bc access refresh not working. why is the omni-concern not providing a refresh token to model?
 strava access not returning the new access token, retry with new line 67 in activities.rb
+
+### startup err
+An unhandled lowlevel error occurred. The application logs may have details.
+
+2020-08-12T03:15:49.613439+00:00 heroku[web.1]: State changed from up to down
+2020-08-12T03:15:50.523461+00:00 app[web.1]: [4] - Gracefully shutting down workers...
+2020-08-14T15:07:20.221609+00:00 heroku[web.1]: State changed from down to starting
+2020-08-14T15:07:20.204273+00:00 heroku[web.1]: Unidling
+2020-08-14T15:07:43.267082+00:00 app[web.1]: [4] Puma starting in cluster mode...
+2020-08-14T15:07:43.267107+00:00 app[web.1]: [4] * Version 4.3.3 (ruby 2.6.3-p62), codename: Mysterious Traveller
+2020-08-14T15:07:43.267107+00:00 app[web.1]: [4] * Min threads: 2, max threads: 2
+2020-08-14T15:07:43.267110+00:00 app[web.1]: [4] * Environment: production
+2020-08-14T15:07:43.267149+00:00 app[web.1]: [4] * Process workers: 1
+2020-08-14T15:07:43.267178+00:00 app[web.1]: [4] * Preloading application
+2020-08-14T15:07:48.984466+00:00 app[web.1]: I, [2020-08-14T15:07:48.984341 #4]  INFO -- : [SKYLIGHT] [4.3.0] Unable to start, see the Skylight logs for more details
+2020-08-14T15:07:49.161623+00:00 app[web.1]: /app/config/routes.rb:3: warning: key :confirmations is duplicated and overwritten on line 5
+2020-08-14T15:07:49.857511+00:00 app[web.1]: I, [2020-08-14T15:07:49.857384 #4]  INFO -- honeybadger: ** [Honeybadger] Initializing Honeybadger Error Tracker for Ruby. Ship it! version=4.6.0 framework=rails level=1 pid=4
+2020-08-14T15:07:49.984336+00:00 app[web.1]: [4] * Listening on tcp://0.0.0.0:7511
+2020-08-14T15:07:49.984344+00:00 app[web.1]: [4] ! WARNING: Detected 2 Thread(s) started in app boot:
+2020-08-14T15:07:49.984422+00:00 app[web.1]: [4] ! #<Thread:0x00005651f9fc6fd8@/app/vendor/bundle/ruby/2.6.0/gems/concurrent-ruby-1.1.6/lib/concurrent-ruby/concurrent/atomic/ruby_thread_local_var.rb:38 sleep_forever> - /app/vendor/bundle/ruby/2.6.0/gems/concurrent-ruby-1.1.6/lib/concurrent-ruby/concurrent/atomic/ruby_thread_local_var.rb:40:in `pop'
+2020-08-14T15:07:49.984472+00:00 app[web.1]: [4] ! #<Thread:0x00005651feefde58@/app/vendor/bundle/ruby/2.6.0/gems/activerecord-6.0.3/lib/active_record/connection_adapters/abstract/connection_pool.rb:334 sleep> - /app/vendor/bundle/ruby/2.6.0/gems/activerecord-6.0.3/lib/active_record/connection_adapters/abstract/connection_pool.rb:337:in `sleep'
+2020-08-14T15:07:49.984594+00:00 app[web.1]: [4] Use Ctrl-C to stop
+2020-08-14T15:07:49.992234+00:00 app[web.1]: [4] - Worker 0 (pid: 16) booted, phase: 0
+2020-08-14T15:07:50.179992+00:00 heroku[web.1]: State changed from starting to up
+2020-08-14T15:07:53.374290+00:00 heroku[router]: at=info method=GET path="/" host=adventure-map-viewer.herokuapp.com request_id=95e10d28-0b8e-4c2f-ab49-84194b81e82e fwd="69.245.105.14" dyno=web.1 connect=0ms service=10ms status=500 bytes=154 protocol=https
+2020-08-14T15:07:53.368033+00:00 app[web.1]: E, [2020-08-14T15:07:53.367803 #16] ERROR -- : source=rack-timeout id=95e10d28-0b8e-4c2f-ab49-84194b81e82e wait=33259ms timeout=30000ms state=expired
+2020-08-14T15:07:53.372825+00:00 app[web.1]: E, [2020-08-14T15:07:53.372735 #16] ERROR -- honeybadger: ** [Honeybadger] Unable to send error report: API key is missing. id=d7981623-c8cd-4125-8b5b-f37a64bc8686 level=3 pid=16
+2020-08-14T15:07:53.373072+00:00 app[web.1]: 2020-08-14 15:07:53 +0000: Rack app error handling request { GET / }
+2020-08-14T15:07:53.373074+00:00 app[web.1]: #<Rack::Timeout::RequestExpiryError: Request older than 30000ms.>
+2020-08-14T15:07:53.373075+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/rack-timeout-0.6.0/lib/rack/timeout/core.rb:109:in `call'
+2020-08-14T15:07:53.373076+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/actionpack-6.0.3/lib/action_dispatch/middleware/request_id.rb:27:in `call'
+2020-08-14T15:07:53.373077+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/skylight-core-4.3.0/lib/skylight/core/probes/action_dispatch/request_id.rb:12:in `call'
+2020-08-14T15:07:53.373078+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/rack-2.2.2/lib/rack/method_override.rb:24:in `call'
+2020-08-14T15:07:53.373078+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/rack-2.2.2/lib/rack/runtime.rb:22:in `call'
+2020-08-14T15:07:53.373078+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.3/lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call'
+2020-08-14T15:07:53.373079+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/actionpack-6.0.3/lib/action_dispatch/middleware/executor.rb:14:in `call'
+2020-08-14T15:07:53.373079+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/actionpack-6.0.3/lib/action_dispatch/middleware/static.rb:126:in `call'
+2020-08-14T15:07:53.373080+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/rack-2.2.2/lib/rack/sendfile.rb:110:in `call'
+2020-08-14T15:07:53.373080+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/actionpack-6.0.3/lib/action_dispatch/middleware/ssl.rb:74:in `call'
+2020-08-14T15:07:53.373081+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/actionpack-6.0.3/lib/action_dispatch/middleware/host_authorization.rb:76:in `call'
+2020-08-14T15:07:53.373081+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/honeybadger-4.6.0/lib/honeybadger/rack/error_notifier.rb:33:in `block in call'
+2020-08-14T15:07:53.373082+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/honeybadger-4.6.0/lib/honeybadger/agent.rb:399:in `with_rack_env'
+2020-08-14T15:07:53.373082+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/honeybadger-4.6.0/lib/honeybadger/rack/error_notifier.rb:30:in `call'
+2020-08-14T15:07:53.373082+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/honeybadger-4.6.0/lib/honeybadger/rack/user_feedback.rb:31:in `call'
+2020-08-14T15:07:53.373083+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/honeybadger-4.6.0/lib/honeybadger/rack/user_informer.rb:21:in `call'
+2020-08-14T15:07:53.373083+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/railties-6.0.3/lib/rails/engine.rb:527:in `call'
+2020-08-14T15:07:53.373084+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/puma-4.3.3/lib/puma/configuration.rb:228:in `call'
+2020-08-14T15:07:53.373084+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/puma-4.3.3/lib/puma/server.rb:682:in `handle_request'
+2020-08-14T15:07:53.373085+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/puma-4.3.3/lib/puma/server.rb:472:in `process_client'
+2020-08-14T15:07:53.373085+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/puma-4.3.3/lib/puma/server.rb:328:in `block in run'
+2020-08-14T15:07:53.373085+00:00 app[web.1]: /app/vendor/bundle/ruby/2.6.0/gems/puma-4.3.3/lib/puma/thread_pool.rb:134:in `block in spawn_thread'   
